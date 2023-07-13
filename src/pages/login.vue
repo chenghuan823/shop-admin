@@ -15,10 +15,10 @@
             </div>
             <el-form :model="form" class="w-[250px]">
                 <el-form-item>
-                    <el-input v-model="form.username" placeholder="请输入用户名"/>
+                    <el-input :prefix-icon="User" v-model="form.username" placeholder="请输入用户名"/>
                 </el-form-item>
                 <el-form-item>
-                    <el-input v-model="form.password" placeholder="请输入密码"/>
+                    <el-input :prefix-icon="Lock" v-model="form.password" placeholder="请输入密码"/>
                 </el-form-item>
                 <el-form-item>
                     <el-button round color="#626aef" class="w-[250px]" type="primary" @click="onSubmit">登录</el-button>
@@ -29,8 +29,9 @@
 </template>
 
 <script setup>
-import { reactive } from 'vue'
 
+import { reactive } from 'vue'
+import { User,Lock } from '@element-plus/icons-vue'
 // do not use same name with ref
 const form = reactive({
   username: '',
