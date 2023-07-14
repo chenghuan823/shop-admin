@@ -3,6 +3,7 @@ import ElementPlus from 'element-plus'
 import 'element-plus/dist/index.css'
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 import './assets/main.css'
+import store from '~/store'
 
 import App from './App.vue'
 
@@ -17,7 +18,7 @@ for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
   }
 
 app.use(router)
-
+app.use(store)
 import 'virtual:windi.css'
 
 app.mount('#app')

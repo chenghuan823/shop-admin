@@ -32,15 +32,11 @@
 import { reactive,ref } from 'vue'
 import { User,Lock } from '@element-plus/icons-vue'
 import { login,getInfo } from '~/api/manager'
-import { ElNotification } from 'element-plus'
 import { useRouter } from 'vue-router'
-import { useCookies } from '@vueuse/integrations/useCookies'
-
-const cookies = useCookies()
-function set(token){
-        cookies.set('admin-token',token)
-    }
-
+import { setToken } from '~/composables/auth'
+import {useStore} from 'vuex'
+import { toast } from '~/composables/util'
+const store=useStore()
 const router =useRouter()
 
 const form = reactive({
@@ -60,15 +56,13 @@ const onSubmit = () => {
         loading.value=true
         login(form.username,form.password)
         .then(res=>{
-            set(res.token)
+            setToken(res.token)
 
-            ElNotification({
-                message:'登录成功',
-                type: 'success',
-            })
+            toast('登录成功')
 
-            getInfo().then(res2=>{
-                console.log(res2);
+            getInfo()
+            .then(res2=>{
+                store.commit('SET_USERUNFO',res2)
             })
 
             router.push('/')
