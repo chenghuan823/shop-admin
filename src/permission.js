@@ -1,9 +1,11 @@
 import router from '~/router'
 import {getToken} from "~/composables/auth"
-import {toast} from '~/composables/util'
+import {toast,showFullLoading,hideFullLoading} from '~/composables/util'
 import store from './store'
 
 router.beforeEach((to, from,next) => {
+    //显示loading
+    showFullLoading()
     const token=getToken()
 
     if(!token && to.path !="/login"){
@@ -23,4 +25,9 @@ router.beforeEach((to, from,next) => {
     }
 
     next()
+  })
+
+  //路由后置守卫
+  router.afterEach((to, from) => {
+    hideFullLoading()
   })
