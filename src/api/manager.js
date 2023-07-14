@@ -1,12 +1,12 @@
-import axios from '~/axios'
+import service from '~/axios'
 
 export function login(username,password){
-    return axios.post("/admin/login",{
+    return service.post("/admin/login",{
         username,
         password
     })
 }
 
 export function getInfo(){
-    return axios.post("/admin/getinfo")
+    return service.post("/admin/getinfo")
 }
