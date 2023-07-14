@@ -25,7 +25,10 @@ const store = createStore({
       if(res){
         setToken(res.token)
       }
-
+    },
+    //退出登录
+    logout({commit}){
+      commit("SET_USERUNFO",{})
     }
   }
 })
