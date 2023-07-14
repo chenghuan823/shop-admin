@@ -31,6 +31,18 @@
 <script setup>
 import { reactive,ref } from 'vue'
 import { User,Lock } from '@element-plus/icons-vue'
+import { login } from '~/api/manager'
+import { ElNotification } from 'element-plus'
+import { useRouter } from 'vue-router'
+import { useCookies } from '@vueuse/integrations/useCookies'
+
+const cookies = useCookies(['locale'])
+function set(token){
+        cookies.set('admin-token',token)
+    }
+
+const router =useRouter()
+
 const form = reactive({
   username: '',
   password: '',
@@ -43,7 +55,24 @@ const onSubmit = () => {
         if(!valid){
             return
         }else{
-            console.log('验证通过');
+            login(form.username,form.password)
+            .then(res=>{
+                console.log(res.data.data.token);
+                set(res.data.data.token)
+                ElNotification({
+                    message:'登录成功',
+                    type: 'success',
+                })
+                router.push('/')
+            })
+            .catch(
+                err=>{
+                    ElNotification({
+                        message: err.response.data.msg || '请求失败',
+                        type: 'error',
+                    })
+                }
+            )
         }
     })
 }
@@ -70,6 +99,7 @@ const rules={
         }
     ]
 }
+
 
 </script>
 
