@@ -24,6 +24,10 @@ router.beforeEach((to, from,next) => {
         store.dispatch("getInfo")
     }
 
+    //设置页面标题
+    let title=(to.meta.title ? to.meta.title : '') + '^v^shop管理后台'
+    document.title=title
+
     next()
   })
 
