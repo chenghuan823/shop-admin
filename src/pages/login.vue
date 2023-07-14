@@ -29,11 +29,9 @@
 </template>
 
 <script setup>
-import { reactive,ref } from 'vue'
+import { reactive,ref,onMounted,onBeforeUnmount } from 'vue'
 import { User,Lock } from '@element-plus/icons-vue'
-import { login,getInfo } from '~/api/manager'
 import { useRouter } from 'vue-router'
-import { setToken } from '~/composables/auth'
 import {useStore} from 'vuex'
 import { toast } from '~/composables/util'
 const store=useStore()
@@ -49,29 +47,31 @@ const formRef=ref(null)
 const loading=ref(false)
 
 const onSubmit = () => {
-    formRef.value.validate((valid)=>{
+    formRef.value.validate(async(valid)=>{
         if(!valid){
             return
         }
         loading.value=true
-        login(form.username,form.password)
-        .then(res=>{
-            setToken(res.token)
-
-            toast('登录成功')
-
-            getInfo()
-            .then(res2=>{
-                store.commit('SET_USERUNFO',res2)
-            })
-
-            router.push('/')
-        })
-        .finally(()=>{
-            loading.value=false
-        })        
+        await store.dispatch("login",form)
+        toast('登录成功')
+        router.push('/')
+        loading.value=false     
     })
 }
+
+function onKeyUp(e){
+    if(e.key==="Enter"){
+        onSubmit()
+    }
+}
+//键盘监听
+
+onMounted(()=>{
+    document.addEventListener("keyup",onKeyUp)
+})
+onBeforeUnmount(() => {
+    document.removeEventListener("keyUp",onKeyUp)
+})
 
 const rules={
     username:[
