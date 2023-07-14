@@ -21,7 +21,7 @@
                     <el-input show-password type="password" :prefix-icon="Lock" v-model="form.password" placeholder="请输入密码"/>
                 </el-form-item>
                 <el-form-item>
-                    <el-button round color="#626aef" class="w-[250px]" type="primary" @click="onSubmit">登录</el-button>
+                    <el-button round color="#626aef" class="w-[250px]" type="primary" @click="onSubmit" :loading="loading">登录</el-button>
                 </el-form-item>
             </el-form>
         </el-col>
@@ -31,12 +31,12 @@
 <script setup>
 import { reactive,ref } from 'vue'
 import { User,Lock } from '@element-plus/icons-vue'
-import { login } from '~/api/manager'
+import { login,getInfo } from '~/api/manager'
 import { ElNotification } from 'element-plus'
 import { useRouter } from 'vue-router'
 import { useCookies } from '@vueuse/integrations/useCookies'
 
-const cookies = useCookies(['locale'])
+const cookies = useCookies()
 function set(token){
         cookies.set('admin-token',token)
     }
@@ -50,30 +50,32 @@ const form = reactive({
 
 const formRef=ref(null)
 
+const loading=ref(false)
+
 const onSubmit = () => {
     formRef.value.validate((valid)=>{
         if(!valid){
             return
-        }else{
-            login(form.username,form.password)
-            .then(res=>{
-                console.log(res.data.data.token);
-                set(res.data.data.token)
-                ElNotification({
-                    message:'登录成功',
-                    type: 'success',
-                })
-                router.push('/')
-            })
-            .catch(
-                err=>{
-                    ElNotification({
-                        message: err.response.data.msg || '请求失败',
-                        type: 'error',
-                    })
-                }
-            )
         }
+        loading.value=true
+        login(form.username,form.password)
+        .then(res=>{
+            set(res.token)
+
+            ElNotification({
+                message:'登录成功',
+                type: 'success',
+            })
+
+            getInfo().then(res2=>{
+                console.log(res2);
+            })
+
+            router.push('/')
+        })
+        .finally(()=>{
+            loading.value=false
+        })        
     })
 }
 
