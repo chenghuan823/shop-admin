@@ -1,8 +1,9 @@
 <script setup>
+import {ref,reactive, toDisplayString} from 'vue'
 import { ArrowDown } from '@element-plus/icons-vue'
 import {showModal} from '~/composables/util'
 import { ElMessage } from 'element-plus'
-import {logout} from '~/api/manager'
+import {logout,updatepassword} from '~/api/manager'
 import { removeToken } from '~/composables/auth'
 import { useRouter } from 'vue-router'
 import {useStore} from 'vuex'
@@ -40,6 +41,79 @@ const handleRefresh=()=>{
     location.reload()
 }
 
+//修改密码
+const drawer = ref(false)
+
+const handleCommand = (command) => {
+  switch (command) {
+    case 'a':
+        drawer.value=true;
+        break;
+    case 'b':
+        open();
+        break;
+  }
+}
+
+const form = reactive({
+    oldpassword:'',
+    repassword: '',
+    password: '',
+})
+const loading=ref(false)
+
+const onSubmit = async() => {
+    formRef.value.validate(async(valid)=>{
+        if(!valid){
+            return
+        }
+        loading.value=true
+        // await store.dispatch("login",form)
+        // toast('登录成功')
+        try {
+            const res= await updatepassword(form)
+            if(res){
+                toast('修改成功')
+                //移除token
+                removeToken()
+                //清除vuex
+                store.dispatch('logout')
+                //登录页面
+                router.push('/login')
+            }
+        } catch (error) {
+            loading.value=false               
+        }
+
+        // router.push('/')
+    })
+}
+
+const formRef=ref(null)
+
+const rules={
+    oldpassword:[
+        { 
+            required: true,
+            message: '旧密码不能为空',
+            trigger: 'blur' 
+        }
+    ],
+    password:[
+        {
+            required: true,
+            trigger: 'blur',
+            message: '新密码不能为空',
+        }
+    ],
+    repassword:[
+        {
+            required: true,
+            trigger: 'blur',
+            message: '确认密码不能为空',
+        }
+    ]
+}
 </script>
 
 <template>
@@ -56,7 +130,7 @@ const handleRefresh=()=>{
             <el-tooltip effect="dark" content="全屏" placement="bottom">
                 <el-icon class="icon-btn" @click="toggle"><full-screen v-if="!isFullscreen"/><aim v-else/></el-icon>
             </el-tooltip>
-            <el-dropdown class="dropdown">
+            <el-dropdown class="dropdown"  @command="handleCommand">
                 <span class="flex items-center justify-center text-light-50 ">
                     <el-avatar class="mr-2" :size="25" :src="$store.state.user.avatar" />
                     {{ $store.state.user.username }}
@@ -66,13 +140,29 @@ const handleRefresh=()=>{
                 </span>
                 <template #dropdown>
                 <el-dropdown-menu>
-                    <el-dropdown-item>修改密码</el-dropdown-item>
-                    <el-dropdown-item  @click="open">退出登录</el-dropdown-item>
+                    <el-dropdown-item command="a">修改密码</el-dropdown-item>
+                    <el-dropdown-item command="b">退出登录</el-dropdown-item>
                 </el-dropdown-menu>
                 </template>
             </el-dropdown>
         </div>
     </div>
+    <el-drawer :close-on-click-modal="false" size="45%" v-model="drawer" title="修改密码" >
+        <el-form ref="formRef" :model="form" :rules="rules">
+            <el-form-item prop="oldpassword" label="旧密码" label-width="80px" size="small">
+                <el-input v-model="form.oldpassword" placeholder="请输入旧密码"/>
+            </el-form-item>
+            <el-form-item prop="password" label="新密码" label-width="80px" size="small">
+                <el-input show-password type="password"  v-model="form.password" placeholder="请输入新密码"/>
+            </el-form-item>
+            <el-form-item prop="repassword" label="确认密码" label-width="80px" size="small">
+                <el-input show-password type="password"  v-model="form.repassword" placeholder="请确认密码"/>
+            </el-form-item>
+            <el-form-item>
+                <el-button  type="primary" @click="onSubmit" :loading="loading">提交</el-button>
+            </el-form-item>
+        </el-form>
+    </el-drawer>
 </template>
 
 <style scoped>
