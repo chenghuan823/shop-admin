@@ -8,7 +8,8 @@ const store = createStore({
     return {
       user:{},//用户信息，
       asideWidth:"250px",//侧边宽度
-
+      menus:[],
+      ruleNames:[]
     }
   },
   mutations: {
@@ -18,12 +19,21 @@ const store = createStore({
     //展开或收起侧边栏
     handleAsideWidth(state){
       state.asideWidth=(state.asideWidth==="250px" ? "64px" : "250px")
+    },
+    SET_MENUS(state,menus){
+      state.menus=menus
+    },
+    SET_RULENAMES(state,rulenames){
+      state.ruleNames=rulenames
     }
   },
   actions:{
     async getInfo({commit}){
       const res=await getInfo()
+      const {ruleNames,menus}=res
       commit("SET_USERUNFO",res)
+      commit("SET_MENUS",menus)
+      commit("SET_RULENAMES",ruleNames)
     },
     //登录
     async login({commit},{username,password}){

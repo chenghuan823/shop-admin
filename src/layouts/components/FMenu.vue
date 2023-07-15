@@ -9,26 +9,7 @@ const route =useRoute()
 //默认激活菜单
 const defaultActive=ref(route.path)
 
-const asideMenus = [
-    {
-        name: "后台面板",
-        icon: "help",
-        child: [{
-            name: '主控台',
-            icon: 'home-filled',
-            frontpath: '/',
-        }],
-    },
-    {
-        name: "商城管理",
-        icon: "shopping-bag",
-        child: [{
-            name: '商城管理',
-            icon: 'shopping-cart-full',
-            frontpath: '/goods/list',
-        }],
-    },
-]
+const asideMenus = computed(()=>store.state.menus)
 
 const handleSelect=(path)=>{
     router.push(path)
@@ -77,5 +58,8 @@ const isCollapse=computed(()=>store.state.asideWidth==='64px')
     overflow-y: auto;
     overflow-x: hidden;
     @apply shadow-md bg-light-50 fixed;
+}
+.f-menu::-webkit-scrollbar{
+    width:0px
 }
 </style>
