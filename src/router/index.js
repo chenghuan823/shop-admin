@@ -72,6 +72,7 @@ export function addRoutes(menus){
     let hasNewRoutes=false
     const findAndAddRoutesByMenus=(arr)=>{
         arr.forEach(e=>{
+            debugger
             let item=asyncRoutes.find(o=>o.path===e.frontpath)
             if(item && !router.hasRoute(item.path)){
                 router.addRoute('admin',item)
