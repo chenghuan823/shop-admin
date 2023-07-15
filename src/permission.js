@@ -30,7 +30,7 @@ router.beforeEach(async(to, from,next) => {
     let title=(to.meta.title ? to.meta.title : '') + '^v^shop管理后台'
     document.title=title
 
-    hasNewRoutes ? next(to.fulPath) : next()
+    hasNewRoutes ? next(to.fullPath) : next()
   })
 
   //路由后置守卫

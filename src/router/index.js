@@ -76,7 +76,7 @@ export function addRoutes(menus){
             if(item && !router.hasRoute(item.path)){
                 router.addRoute('admin',item)
                 hasNewRoutes=true
-            }
+            } 
             if(e.child && e.child.length>0){
                 findAndAddRoutesByMenus(e.child)
             }
