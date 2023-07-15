@@ -34,6 +34,7 @@ const store = createStore({
       commit("SET_USERUNFO",res)
       commit("SET_MENUS",menus)
       commit("SET_RULENAMES",ruleNames)
+      return res
     },
     //登录
     async login({commit},{username,password}){

@@ -1,9 +1,9 @@
-import router from '~/router'
+import {router,addRoutes} from '~/router'
 import {getToken} from "~/composables/auth"
 import {toast,showFullLoading,hideFullLoading} from '~/composables/util'
 import store from './store'
 
-router.beforeEach((to, from,next) => {
+router.beforeEach(async(to, from,next) => {
     //显示loading
     showFullLoading()
     const token=getToken()
@@ -20,15 +20,17 @@ router.beforeEach((to, from,next) => {
     }
 
     //用户登录，调接口获取user信息，存到vuex
+    let hasNewRoutes=false
     if(token){
-        store.dispatch("getInfo")
+        const res=await store.dispatch("getInfo")
+        hasNewRoutes=addRoutes(res.menus)
     }
 
     //设置页面标题
     let title=(to.meta.title ? to.meta.title : '') + '^v^shop管理后台'
     document.title=title
 
-    next()
+    hasNewRoutes ? next(to.fulPath) : next()
   })
 
   //路由后置守卫
