@@ -1,5 +1,5 @@
 <script setup>
-import {ref,reactive, toDisplayString} from 'vue'
+import {ref,reactive} from 'vue'
 import { ArrowDown } from '@element-plus/icons-vue'
 import {showModal} from '~/composables/util'
 import { ElMessage } from 'element-plus'
@@ -8,25 +8,35 @@ import { removeToken } from '~/composables/auth'
 import { useRouter } from 'vue-router'
 import {useStore} from 'vuex'
 import { useFullscreen } from '@vueuse/core'
+import FormDrawer from '~/components/FormDrawer.vue'
+
+const store=useStore()
+const router =useRouter()
+
+const form = reactive({
+    oldpassword:'',
+    repassword: '',
+    password: '',
+})
+const formDrawerRef=ref(null)
+const formRef=ref(null)
 
 const { isFullscreen,toggle } = useFullscreen()
-const store=useStore()
 
-const router =useRouter()
+const handleRefresh=()=>{
+    location.reload()
+}
 
 const handleLogout= async()=>{
     const res=await logout()
     if(res){
-        //移除token
         removeToken()
-        //清除vuex
         store.dispatch('logout')
-        //登录页面
         router.push('/login')
     }
 }
 
-const open=()=>{
+const openLogoutModal=()=>{
     showModal("是否退出登录").then(() => {
         ElMessage({
         type: 'success',
@@ -34,42 +44,25 @@ const open=()=>{
         })
         handleLogout()
     }).catch(()=>{})
-    
 }
-
-const handleRefresh=()=>{
-    location.reload()
-}
-
-//修改密码
-const drawer = ref(false)
 
 const handleCommand = (command) => {
   switch (command) {
     case 'a':
-        drawer.value=true;
+        formDrawerRef.value.open()
         break;
     case 'b':
-        open();
+        openLogoutModal();
         break;
   }
 }
-
-const form = reactive({
-    oldpassword:'',
-    repassword: '',
-    password: '',
-})
-const loading=ref(false)
 
 const onSubmit = async() => {
     formRef.value.validate(async(valid)=>{
         if(!valid){
             return
         }
-        loading.value=true
-        // await store.dispatch("login",form)
-        // toast('登录成功')
+        formDrawerRef.value.showLoading()
         try {
             const res= await updatepassword(form)
             if(res){
@@ -82,14 +75,10 @@ const onSubmit = async() => {
                 router.push('/login')
             }
         } catch (error) {
-            loading.value=false               
         }
-
-        // router.push('/')
+        formDrawerRef.value.hideLoading()            
     })
 }
-
-const formRef=ref(null)
 
 const rules={
     oldpassword:[
@@ -114,6 +103,7 @@ const rules={
         }
     ]
 }
+
 </script>
 
 <template>
@@ -147,7 +137,7 @@ const rules={
             </el-dropdown>
         </div>
     </div>
-    <el-drawer :close-on-click-modal="false" size="45%" v-model="drawer" title="修改密码" >
+    <FormDrawer ref="formDrawerRef" @submit="onSubmit" title="修改密码" destoryOnClose confirmText="提交">
         <el-form ref="formRef" :model="form" :rules="rules">
             <el-form-item prop="oldpassword" label="旧密码" label-width="80px" size="small">
                 <el-input v-model="form.oldpassword" placeholder="请输入旧密码"/>
@@ -158,18 +148,14 @@ const rules={
             <el-form-item prop="repassword" label="确认密码" label-width="80px" size="small">
                 <el-input show-password type="password"  v-model="form.repassword" placeholder="请确认密码"/>
             </el-form-item>
-            <el-form-item>
-                <el-button  type="primary" @click="onSubmit" :loading="loading">提交</el-button>
-            </el-form-item>
         </el-form>
-    </el-drawer>
+    </FormDrawer>
 </template>
 
 <style scoped>
 .f-header{
     @apply flex items-center bg-indigo-700 text-light-50 fixed top-0 right-0 left-0;
     height:64px;
-
 }
 .logo{
     width: 250px;
@@ -187,7 +173,6 @@ const rules={
 .f-header .dropdown{
     height: 64px;
     cursor:pointer;
-
     @apply flex items-center justify-center mx-5;
 }
 </style>
