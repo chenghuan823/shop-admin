@@ -1,109 +1,35 @@
 <script setup>
-import {ref,reactive} from 'vue'
-import { ArrowDown } from '@element-plus/icons-vue'
-import {showModal} from '~/composables/util'
-import { ElMessage } from 'element-plus'
-import {logout,updatepassword} from '~/api/manager'
-import { removeToken } from '~/composables/auth'
-import { useRouter } from 'vue-router'
-import {useStore} from 'vuex'
 import { useFullscreen } from '@vueuse/core'
 import FormDrawer from '~/components/FormDrawer.vue'
+import { useRepassword } from '~/composables/useManager'
+import { useLogout } from '~/composables/useManager'
 
-const store=useStore()
-const router =useRouter()
+const {
+    form,
+    formDrawerRef,
+    formRef,
+    onSubmit,
+    rules,
+    openRepasswordForm
+}=useRepassword()
 
-const form = reactive({
-    oldpassword:'',
-    repassword: '',
-    password: '',
-})
-const formDrawerRef=ref(null)
-const formRef=ref(null)
+const {openLogoutModal}=useLogout()
 
 const { isFullscreen,toggle } = useFullscreen()
 
-const handleRefresh=()=>{
-    location.reload()
-}
+const handleRefresh=()=>location.reload()
 
-const handleLogout= async()=>{
-    const res=await logout()
-    if(res){
-        removeToken()
-        store.dispatch('logout')
-        router.push('/login')
-    }
-}
-
-const openLogoutModal=()=>{
-    showModal("是否退出登录").then(() => {
-        ElMessage({
-        type: 'success',
-        message: '退出登录',
-        })
-        handleLogout()
-    }).catch(()=>{})
-}
-
+//触发头部下拉框内的事件
 const handleCommand = (command) => {
   switch (command) {
     case 'a':
-        formDrawerRef.value.open()
+        openRepasswordForm()
         break;
     case 'b':
         openLogoutModal();
         break;
   }
 }
-
-const onSubmit = async() => {
-    formRef.value.validate(async(valid)=>{
-        if(!valid){
-            return
-        }
-        formDrawerRef.value.showLoading()
-        try {
-            const res= await updatepassword(form)
-            if(res){
-                toast('修改成功')
-                //移除token
-                removeToken()
-                //清除vuex
-                store.dispatch('logout')
-                //登录页面
-                router.push('/login')
-            }
-        } catch (error) {
-        }
-        formDrawerRef.value.hideLoading()            
-    })
-}
-
-const rules={
-    oldpassword:[
-        { 
-            required: true,
-            message: '旧密码不能为空',
-            trigger: 'blur' 
-        }
-    ],
-    password:[
-        {
-            required: true,
-            trigger: 'blur',
-            message: '新密码不能为空',
-        }
-    ],
-    repassword:[
-        {
-            required: true,
-            trigger: 'blur',
-            message: '确认密码不能为空',
-        }
-    ]
-}
-
 </script>
 
 <template>
@@ -137,7 +63,7 @@ const rules={
             </el-dropdown>
         </div>
     </div>
-    <FormDrawer ref="formDrawerRef" @submit="onSubmit" title="修改密码" destoryOnClose confirmText="提交">
+    <FormDrawer ref="formDrawerRef" title="修改密码" destoryOnClose confirmText="提交" @submit="onSubmit" >
         <el-form ref="formRef" :model="form" :rules="rules">
             <el-form-item prop="oldpassword" label="旧密码" label-width="80px" size="small">
                 <el-input v-model="form.oldpassword" placeholder="请输入旧密码"/>
