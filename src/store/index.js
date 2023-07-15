@@ -6,12 +6,18 @@ import { setToken } from '~/composables/auth'
 const store = createStore({
   state () {
     return {
-      user:{}//用户信息
+      user:{},//用户信息，
+      asideWidth:"250px",//侧边宽度
+
     }
   },
   mutations: {
     SET_USERUNFO(state,user){
         state.user=user
+    },
+    //展开或收起侧边栏
+    handleAsideWidth(state){
+      state.asideWidth=(state.asideWidth==="250px" ? "64px" : "250px")
     }
   },
   actions:{

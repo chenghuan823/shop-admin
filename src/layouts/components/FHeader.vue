@@ -38,7 +38,7 @@ const handleCommand = (command) => {
             <el-icon class="mr-1"><eleme-filled/></el-icon>
             盒马鲜生
         </span>
-        <el-icon class="icon-btn"><fold/></el-icon>
+        <el-icon class="icon-btn" @click="$store.commit('handleAsideWidth')"><fold v-if="$store.state.asideWidth==='250px'" /><Expand v-else/></el-icon>
         <el-tooltip effect="dark" content="刷新" placement="bottom">
             <el-icon  @click="handleRefresh" class="icon-btn"><Refresh/></el-icon>
         </el-tooltip>
