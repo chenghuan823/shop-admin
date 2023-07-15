@@ -46,6 +46,8 @@ const store = createStore({
     //退出登录
     logout({commit}){
       commit("SET_USERUNFO",{})
+      commit("SET_MENUS",[])
+      commit("SET_RULENAMES",[])
     }
   }
 })
