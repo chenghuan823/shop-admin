@@ -3,6 +3,7 @@ import {getToken} from "~/composables/auth"
 import {toast,showFullLoading,hideFullLoading} from '~/composables/util'
 import store from './store'
 
+let hasGetInfo=false
 router.beforeEach(async(to, from,next) => {
     //显示loading
     showFullLoading()
@@ -21,8 +22,9 @@ router.beforeEach(async(to, from,next) => {
 
     //用户登录，调接口获取user信息，存到vuex
     let hasNewRoutes=false
-    if(token){
+    if(token && !hasGetInfo){
         const res=await store.dispatch("getInfo")
+        hasGetInfo=true
         hasNewRoutes=addRoutes(res.menus)
     }
 
