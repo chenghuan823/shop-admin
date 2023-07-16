@@ -2,6 +2,7 @@
 import {reactive,ref} from 'vue'
 import { getStatistics1 } from '~/api/index.js'
 import CountTo from '~/components/CountTo.vue'
+import IndexNavs from '~/components/IndexNavs.vue';
 
 const panels=ref([])
 
@@ -16,6 +17,7 @@ GetStatistics1()
 <template>
     <div>
         <el-row :gutter="20">
+            <!-- 骨架屏 -->
             <template v-if="panels.length===0">
                 <el-col :span="6" v-for="i in 4" :key="i">
                     <el-skeleton style="width: 100%" animated loading>
@@ -40,7 +42,6 @@ GetStatistics1()
                     </el-skeleton>
                 </el-col>
             </template>
-
             <el-col :span="6" :offset="0" v-for="(item,index) in panels" :key="index">
                 <el-card shadow="hover" class="border-0">
                     <template #header>
@@ -59,7 +60,8 @@ GetStatistics1()
                 </el-card>
             </el-col>
         </el-row>
-        
+
+        <IndexNavs/>
     </div>
 </template>
 

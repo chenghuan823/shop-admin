@@ -9,6 +9,14 @@ import Login from '~/pages/login.vue'
 import Admin from '~/layouts/admin.vue'
 import GoodList from '~/pages/goods/list.vue'
 import CategoryList from '~/pages/category/list.vue'
+import UserList from '~/pages/user/list.vue'
+import OrderList from '~/pages/order/list.vue'
+import ImageList from '~/pages/image/list.vue'
+import CommentList from '~/pages/comment/list.vue'
+import NoticeList from '~/pages/notice/list.vue'
+import SettingBase from '~/pages/setting/base.vue'
+import CouponList from '~/pages/coupon/list.vue'
+
 
 //默认路由，所有用户共享
 const routes=[
@@ -59,6 +67,61 @@ const asyncRoutes=[
             title:'分类列表'
         }
     },
+    {
+        path:"/user/list",
+        component:UserList,
+        name:'/user/list',
+        meta:{
+            title:'用户列表'
+        }
+    },
+    {
+        path:"/order/list",
+        component:OrderList,
+        name:'/order/list',
+        meta:{
+            title:'订单列表'
+        }
+    },
+    {
+        path:"/comment/list",
+        component:CommentList,
+        name:'/comment/list',
+        meta:{
+            title:'评价列表'
+        }
+    },
+    {
+        path:"/image/list",
+        component:ImageList,
+        name:'/image/list',
+        meta:{
+            title:'图库列表'
+        }
+    },
+    {
+        path:"/coupon/list",
+        component:CouponList,
+        name:'/coupon/list',
+        meta:{
+            title:'优惠券列表'
+        }
+    },
+    {
+        path:"/notice/list",
+        component:NoticeList,
+        name:'/notice/list',
+        meta:{
+            title:'公告列表'
+        }
+    },{
+        path:"/setting/base",
+        component:SettingBase,
+        name:'/setting/base',
+        meta:{
+            title:'配置'
+        }
+    }
 ]
 
 
