@@ -18,7 +18,7 @@ export function logout(){
     return service.post("/admin/logout")
 }
 
-//退出登录
+//修改登录
 export function updatepassword(data){
     return service.post("/admin/updatepassword",data)
 }
