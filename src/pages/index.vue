@@ -1,6 +1,7 @@
 <script setup>
 import {reactive,ref} from 'vue'
 import { getStatistics1 } from '~/api/index.js'
+import CountTo from '~/components/CountTo.vue'
 
 const panels=ref([])
 
@@ -49,11 +50,11 @@ GetStatistics1()
                     </div>
                     </template>
                     <!-- card body -->
-                    <span class="text-3xl font-bold text-gray-500">{{ item.value }}</span>
+                    <span class="text-3xl font-bold text-gray-500"><CountTo :value="item.value"/></span>
                     <el-divider/>
                     <div class="flex justify-between text-sm text-gray-500">
                         <span>{{ item.subTitle }}</span>
-                        <span>{{ item.subValue }}</span>
+                        <span><CountTo :value="item.subValue"/></span>
                     </div>
                 </el-card>
             </el-col>
