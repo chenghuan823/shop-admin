@@ -34,8 +34,10 @@ var myChart=null;
 
 onMounted(()=>{
     var chartDom = document.getElementById('chart')
-    myChart = echarts.init(chartDom)
-    getData()
+    if(chartDom){
+        myChart = echarts.init(chartDom)
+        getData()
+    }
 });
 
 // 销毁实例
@@ -78,7 +80,7 @@ const getData=async()=>{
 // 图标跟随窗口缩放
 const el = ref(null)
 useResizeObserver(el, (entries) => {
-    myChart.resize()
+    myChart && myChart.resize()
 })
 
 </script>

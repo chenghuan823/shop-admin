@@ -22,4 +22,7 @@ app.use(store)
 import 'virtual:windi.css'
 import './permission'
 import "nprogress/nprogress.css"
+
+import permission from '~/directives/permission'
+app.use(permission)
 app.mount('#app')

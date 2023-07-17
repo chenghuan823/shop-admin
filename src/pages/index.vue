@@ -33,7 +33,7 @@ GetStatistics2()
 
 <template>
     <div>
-        <el-row :gutter="20">
+        <el-row :gutter="20" v-permission="['getStatistics1,GET']">
             <!-- 骨架屏 -->
             <template v-if="panels.length===0">
                 <el-col :span="6" v-for="i in 4" :key="i">
@@ -82,9 +82,9 @@ GetStatistics2()
         <!-- 订单统计 -->
         <el-row  class="mt-5" :gutter="20">
             <el-col :span="12" :offset="0">
-                <IndexChart/>
+                <IndexChart v-permission="['getStatistics3,GET']"/>
             </el-col>
-            <el-col :span="12" :offset="0">
+            <el-col :span="12" :offset="0" v-permission="['getStatistics2,GET']">
                 <IndexCard class="mb-4" title="店铺及商品提示" tip="店铺及商品提示" :btns="state.goods"/>
                 <IndexCard title="交易提示" tip="需要立即处理的交易提示" :btns="state.order" />
             </el-col>
