@@ -1,4 +1,6 @@
 <script setup>
+import ImageAside from '~/components/ImageAside.vue'
+import ImageMain from '~/components/ImageMain.vue'
 const windowHeight= window.innerHeight || document.body.clientHeight
 const h=windowHeight - 64 - 44 - 40
 </script>
@@ -7,22 +9,8 @@ const h=windowHeight - 64 - 44 - 40
     <el-container class="bg-white rounded" :style="{height: (h + 'px')}">
         <el-header class="image-header">Header</el-header>
         <el-container>
-            <el-aside  width="220px" class="image-aside">
-                <div class="top">
-                    <div v-for="i in 100" :key="i">{{ i }}</div>
-                </div>
-                <div class="bottom">
-                    分页区域
-                </div>
-            </el-aside>
-            <el-main class="image-main">
-                <div class="top">
-                    <div v-for="i in 100" :key="i">{{ i }}</div>
-                </div>
-                <div class="bottom">
-                    分页区域
-                </div>
-            </el-main>
+            <ImageAside/>
+            <ImageMain/>
         </el-container>
     </el-container>
 </template>
@@ -32,27 +20,6 @@ const h=windowHeight - 64 - 44 - 40
     @apply flex items-center  ;
     border-bottom: 1px solid #eee;
 }
-.image-aside{
-    border-right: 1px solid #eee;
-    position: relative;
-}
-.image-aside .top,.image-main .top{
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 50px;
-    left: 0;
-    overflow-y: auto;
-}
-.image-aside .bottom,.image-main .bottom{
-@apply flex items-center justify-center ;
-position: absolute;
-bottom: 0;
-height: 50px;
-left: 0;
-right: 0;
-}
-.image-main{
-position: relative;
-}
+
+
 </style>
