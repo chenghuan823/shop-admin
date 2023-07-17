@@ -3,6 +3,7 @@ import {reactive,ref} from 'vue'
 import { getStatistics1 } from '~/api/index.js'
 import CountTo from '~/components/CountTo.vue'
 import IndexNavs from '~/components/IndexNavs.vue';
+import IndexChart from '~/components/IndexChart.vue';
 
 const panels=ref([])
 
@@ -60,8 +61,16 @@ GetStatistics1()
                 </el-card>
             </el-col>
         </el-row>
-
+        <!-- 分类组件 -->
         <IndexNavs/>
+        <!-- 图标 -->
+        <el-row  class="mt-5" :gutter="20">
+            <el-col :span="12" :offset="0">
+                <IndexChart/>
+            </el-col>
+            <el-col :span="12" :offset="0"></el-col>
+        </el-row>
+        
     </div>
 </template>
 
