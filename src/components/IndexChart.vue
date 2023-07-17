@@ -94,7 +94,7 @@ useResizeObserver(el, (entries) => {
     </div>
     </template>
     <!-- card body -->
-    <div ref="el" id="chart" style="width:100%;height:400px">
+    <div ref="el" id="chart" style="width:100%;height:300px">
 
     </div>
 </el-card>

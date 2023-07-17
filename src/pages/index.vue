@@ -1,9 +1,15 @@
 <script setup>
 import {reactive,ref} from 'vue'
-import { getStatistics1 } from '~/api/index.js'
+import { getStatistics1,getStatistics2 } from '~/api/index.js'
 import CountTo from '~/components/CountTo.vue'
 import IndexNavs from '~/components/IndexNavs.vue';
 import IndexChart from '~/components/IndexChart.vue';
+import IndexCard from '~/components/IndexCard.vue';
+
+const state=reactive({
+    goods:[],
+    order:[]
+})
 
 const panels=ref([])
 
@@ -12,6 +18,16 @@ const GetStatistics1=async ()=>{
     panels.value=res.panels
 }
 GetStatistics1()
+
+const GetStatistics2=async ()=>{
+    const res= await getStatistics2()
+    if(res){
+        const {goods,order}=res
+        state.goods=goods
+        state.order=order
+    }
+}
+GetStatistics2()
 
 </script>
 
@@ -61,14 +77,17 @@ GetStatistics1()
                 </el-card>
             </el-col>
         </el-row>
-        <!-- 分类组件 -->
+        <!-- 分类图标组件 -->
         <IndexNavs/>
-        <!-- 图标 -->
+        <!-- 订单统计 -->
         <el-row  class="mt-5" :gutter="20">
             <el-col :span="12" :offset="0">
                 <IndexChart/>
             </el-col>
-            <el-col :span="12" :offset="0"></el-col>
+            <el-col :span="12" :offset="0">
+                <IndexCard class="mb-4" title="店铺及商品提示" tip="店铺及商品提示" :btns="state.goods"/>
+                <IndexCard title="交易提示" tip="需要立即处理的交易提示" :btns="state.order" />
+            </el-col>
         </el-row>
         
     </div>
