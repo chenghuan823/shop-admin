@@ -2,6 +2,7 @@
 import {ref,reactive} from 'vue'
 import AsideList from '~/components/AsideList.vue'
 import {getImageList} from '~/api/image_class'
+import FormDrawer from '~/components/FormDrawer.vue'
 
 const imageList=ref([])
 const loading=ref(false)
@@ -28,6 +29,39 @@ const GetImageList=async(page)=>{
     loading.value=false
 }
 GetImageList(state.page)
+// ******
+const formDrawerRef=ref(null)
+
+const handleCreate=()=>formDrawerRef.value.open()
+defineExpose({
+    handleCreate
+})
+// ***********
+const formRef=ref(null)
+
+const handleSubmit=()=>{
+    formRef.value.validate((valid)=>{
+        if(!valid){
+            return
+        }
+        console.log('提交成功');
+    })
+}
+
+const form=reactive({
+    name:'',
+    order:50
+})
+
+const rules={
+    name:[
+        {
+            required:true,
+            message:'相册名称不能为空',
+            trigger:'blur'
+        }
+    ]
+}
 
 </script>
 
@@ -40,6 +74,17 @@ GetImageList(state.page)
             <el-pagination background layout="prev,next" :total="state.total" :current-page="state.page" :page-size="state.limit" @current-change="GetImageList"/>
         </div>
     </el-aside>
+
+    <FormDrawer title="新增" ref="formDrawerRef" @submit="handleSubmit">
+        <el-form :model="form" ref="formRef" :rules="rules" label-width="80px" :inline="false">
+            <el-form-item label="相册名称" prop="name">
+                <el-input v-model="form.name"></el-input>
+            </el-form-item>
+            <el-form-item label="排序" prop="order">
+                <el-input-number v-model="form.order" :min="0" :max="1000"></el-input-number>
+            </el-form-item>
+        </el-form>
+    </FormDrawer>
 </template>
 
 <style scoped>
