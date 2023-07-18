@@ -5,10 +5,17 @@ import {getImageList,createImageClass,updateImageClass,deleteImageClass} from '~
 import FormDrawer from '~/components/FormDrawer.vue'
 import {toast} from '~/composables/util'
 
+const emit=defineEmits(['change'])
+
 const imageList=ref([])
 
 const loading=ref(false)
 const activeId=ref(0)
+
+const handleChangeActiveId=(id)=>{
+    activeId.value=id
+    emit('change',id)
+}
 
 const state=reactive({
     page:1,
@@ -33,6 +40,7 @@ const GetImageList=async(page=1)=>{
         let item=imageList.value[0]
         if(item){
             activeId.value=item.id
+            handleChangeActiveId(item.id)
         }
     }
     loading.value=false
@@ -133,7 +141,7 @@ const rules={
 <template>
     <el-aside  width="220px" class="image-aside" v-loading="loading">
         <div class="top">
-            <AsideList v-for="item in imageList" :key="item.id" :active="activeId===item.id" @delete="handleDelete(item)" @edit="handleEdit(item)">{{ item.name }}</AsideList>
+            <AsideList v-for="item in imageList" :key="item.id" :active="activeId===item.id" @delete="handleDelete(item)" @edit="handleEdit(item)" @click="handleChangeActiveId(item.id)">{{ item.name }}</AsideList>
         </div>
         <div class="bottom">
             <el-pagination background layout="prev,next" :total="state.total" :current-page="state.page" :page-size="state.limit" @current-change="GetImageList"/>

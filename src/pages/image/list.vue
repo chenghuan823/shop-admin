@@ -1,15 +1,19 @@
 <script setup>
 import {ref} from 'vue'
-
 import ImageAside from '~/components/ImageAside.vue'
 import ImageMain from '~/components/ImageMain.vue'
 const windowHeight= window.innerHeight || document.body.clientHeight
 const h=windowHeight - 64 - 44 - 40
 
 const ImageAsideRef=ref(null)
+const ImageMainRef=ref(null)
 
 const handleOpenCreate=()=>{
     ImageAsideRef.value.handleCreate()
+}
+
+const handleAsideChange=(ClassId)=>{
+ImageMainRef.value.loadData(ClassId)
 }
 </script>
 
@@ -20,8 +24,8 @@ const handleOpenCreate=()=>{
             
         </el-header>
         <el-container>
-            <ImageAside ref="ImageAsideRef"/>
-            <ImageMain/>
+            <ImageAside ref="ImageAsideRef" @change="handleAsideChange"/>
+            <ImageMain ref="ImageMainRef"/>
         </el-container>
     </el-container>
 </template>
