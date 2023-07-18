@@ -65,7 +65,6 @@ defineExpose({
 })
 
 const handleEdit=(item)=>{
-    console.log(item);
 editId.value=item.id
 form.name=item.name
 form.order=item.order
@@ -73,7 +72,6 @@ formDrawerRef.value.open()
 }
 
 const handleDelete=(item)=>{
-    console.log(item.id);
     DeleteImageClass(item.id)
 }
 // 新增图库api
