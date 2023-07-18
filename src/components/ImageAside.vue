@@ -14,9 +14,11 @@ const state=reactive({
 })
 
 const GetImageList=async(page)=>{
+    state.page=page
     loading.value=true
     const res=await getImageList(page)
     if(res){
+        state.total=res.totalCount
         imageList.value=res.list
         let item=imageList.value[0]
         if(item){
@@ -35,7 +37,7 @@ GetImageList(state.page)
             <AsideList v-for="item in imageList" :key="item.id" :active="activeId===item.id">{{ item.name }}</AsideList>
         </div>
         <div class="bottom">
-            <el-pagination background layout="prev,next" :total="1000" />
+            <el-pagination background layout="prev,next" :total="state.total" :current-page="state.page" :page-size="state.limit" @current-change="GetImageList"/>
         </div>
     </el-aside>
 </template>
