@@ -1,9 +1,16 @@
 <script setup>
-import {ref} from 'vue'
+import {ref,onMounted,onBeforeUnmount,computed} from 'vue'
 import ImageAside from '~/components/ImageAside.vue'
 import ImageMain from '~/components/ImageMain.vue'
-const windowHeight= window.innerHeight || document.body.clientHeight
-const h=windowHeight - 64 - 44 - 40
+let windowHeight= ref(window.innerHeight || document.body.clientHeight)
+
+const getHeight=()=>{
+    windowHeight.value= window.innerHeight || document.body.clientHeight
+}
+
+let h=computed(()=>{
+    return windowHeight.value - 64 - 44 - 40
+})
 
 const ImageAsideRef=ref(null)
 const ImageMainRef=ref(null)
@@ -15,10 +22,16 @@ const handleOpenCreate=()=>{
 const handleAsideChange=(ClassId)=>{
 ImageMainRef.value.loadData(ClassId)
 }
-</script>
 
+window.addEventListener("resize",getHeight)
+
+onBeforeUnmount(() => {
+    window.removeEventListener("resize",getHeight)
+})
+
+</script>
 <template>
-    <el-container class="bg-white rounded" :style="{height: (h + 'px')}">
+    <el-container class="bg-white rounded" :style="{height:h+'px'}">
         <el-header class="image-header">
             <el-button type="primary" size="small" @click="handleOpenCreate">新增图片分类</el-button>
             
