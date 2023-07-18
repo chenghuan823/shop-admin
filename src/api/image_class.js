@@ -9,3 +9,8 @@ export function getImageList(page){
 export function createImageClass(data){
     return service.post("/admin/image_class",data)
 }
+
+//修改图库分类
+export function updateImageClass(id,data){
+    return service.post('/admin/image_class/'+id,data)
+}

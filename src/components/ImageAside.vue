@@ -1,11 +1,12 @@
 <script setup>
-import {ref,reactive} from 'vue'
+import {ref,reactive,computed} from 'vue'
 import AsideList from '~/components/AsideList.vue'
-import {getImageList,createImageClass} from '~/api/image_class'
+import {getImageList,createImageClass,updateImageClass} from '~/api/image_class'
 import FormDrawer from '~/components/FormDrawer.vue'
 import {toast} from '~/composables/util'
 
 const imageList=ref([])
+
 const loading=ref(false)
 const activeId=ref(0)
 
@@ -14,6 +15,13 @@ const state=reactive({
     total:0,
     limit:10,
 })
+
+const form=reactive({
+    name:'',
+    order:50,
+})
+
+const editId=ref(0)
 
 const GetImageList=async(page=1)=>{
     state.page=page
@@ -30,14 +38,50 @@ const GetImageList=async(page=1)=>{
     loading.value=false
 }
 GetImageList(state.page)
-// ******
+
+// ******新增图片分类
+const drawerTitle=computed(()=>{
+    return editId.value ? '修改' : '新增'
+})
+
 const formDrawerRef=ref(null)
 
-const handleCreate=()=>formDrawerRef.value.open()
+const handleCreate=()=>{
+    editId.value=0
+    form.name=''
+    form.order=50
+    formDrawerRef.value.open()
+}
 defineExpose({
     handleCreate
 })
-// ***********
+
+const handleEdit=(item)=>{
+editId.value=item.id
+form.name=item.name
+form.order=item.order
+formDrawerRef.value.open()
+}
+// 新增图库api
+const CreateImageClass=async(data)=>{
+    const res=await createImageClass(data)
+    if(res){
+        toast(drawerTitle.value+'成功')
+        GetImageList()
+        formDrawerRef.value.close()
+    }
+}
+// 修改图库api
+const UpdateImageClass=async(id,data)=>{
+    const res=await updateImageClass(id,data)
+    if(res){
+        toast(drawerTitle.value+'成功')
+        GetImageList(state.page)
+        formDrawerRef.value.close()
+    }
+}
+
+// 提交表单
 const formRef=ref(null)
 
 const handleSubmit=()=>{
@@ -46,16 +90,15 @@ const handleSubmit=()=>{
             return
         }
         formDrawerRef.value.showLoading()
-        CreateImageClass(form)
+        if(editId.value==0){
+            CreateImageClass(form)
+        }else{
+            UpdateImageClass(editId.value,form)
+        }
         formDrawerRef.value.hideLoading()
 
     })
 }
-
-const form=reactive({
-    name:'',
-    order:50
-})
 
 const rules={
     name:[
@@ -67,27 +110,19 @@ const rules={
     ]
 }
 
-const CreateImageClass=async(data)=>{
-    const res=await createImageClass(data)
-    if(res){
-        toast('新增成功')
-        GetImageList()
-        formDrawerRef.value.close()
-    }
-}
 </script>
 
 <template>
     <el-aside  width="220px" class="image-aside" v-loading="loading">
         <div class="top">
-            <AsideList v-for="item in imageList" :key="item.id" :active="activeId===item.id">{{ item.name }}</AsideList>
+            <AsideList v-for="item in imageList" :key="item.id" :active="activeId===item.id" @edit="handleEdit(item)">{{ item.name }}</AsideList>
         </div>
         <div class="bottom">
             <el-pagination background layout="prev,next" :total="state.total" :current-page="state.page" :page-size="state.limit" @current-change="GetImageList"/>
         </div>
     </el-aside>
 
-    <FormDrawer title="新增" ref="formDrawerRef" @submit="handleSubmit">
+    <FormDrawer :title="drawerTitle" ref="formDrawerRef" @submit="handleSubmit">
         <el-form :model="form" ref="formRef" :rules="rules" label-width="80px" :inline="false">
             <el-form-item label="相册名称" prop="name">
                 <el-input v-model="form.name"></el-input>
