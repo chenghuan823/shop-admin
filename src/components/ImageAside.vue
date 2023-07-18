@@ -1,7 +1,7 @@
 <script setup>
 import {ref,reactive,computed} from 'vue'
 import AsideList from '~/components/AsideList.vue'
-import {getImageList,createImageClass,updateImageClass} from '~/api/image_class'
+import {getImageList,createImageClass,updateImageClass,deleteImageClass} from '~/api/image_class'
 import FormDrawer from '~/components/FormDrawer.vue'
 import {toast} from '~/composables/util'
 
@@ -57,10 +57,16 @@ defineExpose({
 })
 
 const handleEdit=(item)=>{
+    console.log(item);
 editId.value=item.id
 form.name=item.name
 form.order=item.order
 formDrawerRef.value.open()
+}
+
+const handleDelete=(item)=>{
+    console.log(item.id);
+    DeleteImageClass(item.id)
 }
 // 新增图库api
 const CreateImageClass=async(data)=>{
@@ -78,6 +84,18 @@ const UpdateImageClass=async(id,data)=>{
         toast(drawerTitle.value+'成功')
         GetImageList(state.page)
         formDrawerRef.value.close()
+    }
+}
+// 删除图库api
+const DeleteImageClass=async(id)=>{
+    loading.value=true
+    const res=await deleteImageClass(id).finally(()=>{
+        loading.value=false
+    })
+    if(res.data){
+        GetImageList(state.page)
+        formDrawerRef.value.close()
+        toast('删除成功')
     }
 }
 
@@ -115,7 +133,7 @@ const rules={
 <template>
     <el-aside  width="220px" class="image-aside" v-loading="loading">
         <div class="top">
-            <AsideList v-for="item in imageList" :key="item.id" :active="activeId===item.id" @edit="handleEdit(item)">{{ item.name }}</AsideList>
+            <AsideList v-for="item in imageList" :key="item.id" :active="activeId===item.id" @delete="handleDelete(item)" @edit="handleEdit(item)">{{ item.name }}</AsideList>
         </div>
         <div class="bottom">
             <el-pagination background layout="prev,next" :total="state.total" :current-page="state.page" :page-size="state.limit" @current-change="GetImageList"/>
