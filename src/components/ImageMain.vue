@@ -21,7 +21,6 @@ const GetImagesList=async(page=1)=>{
     }
     loading.value=false
 }
-// GetImagesList(state.page)
 
 //根据分类ID重新加载图片列表
 const loadData=(id)=>{
@@ -37,8 +36,19 @@ defineExpose({
 
 <template>
     <el-main class="image-main" v-loading="loading">
-        <div class="top">
-            <div v-for="(item,index) in imageList" :key="index">{{ item.url }}</div>
+        <div class="top p-3">
+            <el-row :gutter="10">
+                <el-col v-for="(item,index) in imageList" :key="index" :span="6" :offset="0">
+                    <el-card shadow="hover"  class="relative mb-3" :body-style="{padding:0}">
+                        <el-image :src="item.url" fit="cover" class="w-full h-[150px]"></el-image>
+                        <div class="image-title">{{ item.name }}</div>
+                        <div class="flex justify-center px-2">
+                            <el-button type="primary" size="small" @click="" text>重命名</el-button>
+                            <el-button type="primary" size="small" @click="" text>删除</el-button>
+                        </div>
+                    </el-card>
+                </el-col>
+            </el-row>
         </div>
         <div class="bottom">
             <el-pagination background layout="prev,pager,next" :total="state.total" :current-page="state.page" :page-size="state.limit" @current-change="GetImagesList"/>
@@ -56,14 +66,21 @@ defineExpose({
     overflow-y: auto;
 }
 .image-main .bottom{
-@apply flex items-center justify-center ;
-position: absolute;
-bottom: 0;
-height: 50px;
-left: 0;
-right: 0;
+    @apply flex items-center justify-center ;
+    position: absolute;
+    bottom: 0;
+    height: 50px;
+    left: 0;
+    right: 0;
 }
 .image-main{
-position: relative;
+    position: relative;
+}
+.image-title{
+    position: absolute;
+    @apply text-sm truncate  text-gray-100 bg-opacity-50 bg-gray-800 px-2 py-1;
+    top: 122px;
+    left: -1px;
+    right: -1px;
 }
 </style>
