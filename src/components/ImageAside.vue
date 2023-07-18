@@ -1,8 +1,9 @@
 <script setup>
 import {ref,reactive} from 'vue'
 import AsideList from '~/components/AsideList.vue'
-import {getImageList} from '~/api/image_class'
+import {getImageList,createImageClass} from '~/api/image_class'
 import FormDrawer from '~/components/FormDrawer.vue'
+import {toast} from '~/composables/util'
 
 const imageList=ref([])
 const loading=ref(false)
@@ -14,7 +15,7 @@ const state=reactive({
     limit:10,
 })
 
-const GetImageList=async(page)=>{
+const GetImageList=async(page=1)=>{
     state.page=page
     loading.value=true
     const res=await getImageList(page)
@@ -44,7 +45,10 @@ const handleSubmit=()=>{
         if(!valid){
             return
         }
-        console.log('提交成功');
+        formDrawerRef.value.showLoading()
+        CreateImageClass(form)
+        formDrawerRef.value.hideLoading()
+
     })
 }
 
@@ -63,6 +67,14 @@ const rules={
     ]
 }
 
+const CreateImageClass=async(data)=>{
+    const res=await createImageClass(data)
+    if(res){
+        toast('新增成功')
+        GetImageList()
+        formDrawerRef.value.close()
+    }
+}
 </script>
 
 <template>
