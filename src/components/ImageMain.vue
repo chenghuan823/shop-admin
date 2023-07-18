@@ -1,6 +1,7 @@
 <script setup>
-import {ref,reactive,computed} from 'vue'
-import {getImagesList} from '~/api/image'
+import {ref,reactive} from 'vue'
+import {getImagesList,updateImageList,deleteImageList} from '~/api/image'
+import {showPrompt,toast} from '~/composables/util'
 
 const imageList=ref([])
 const loading=ref(false)
@@ -32,6 +33,37 @@ const loadData=(id)=>{
 defineExpose({
     loadData
 })
+//点击重命名
+const handleEdit=(item)=>{
+    const {name,id}=item
+    showPrompt('重命名',name)
+    .then(({value})=>{
+        console.log(value);
+        loading.value=true
+        updateImageList(id,value)
+        .then(
+            res=>{
+                toast('修改成功')
+                GetImagesList()
+            }
+        )
+        .finally(()=>{
+            loading.value=false
+        })
+    })
+}
+//点击删除
+const handleDelete=(id)=>{
+    loading.value=true
+    deleteImageList([id])
+    .then(res=>{
+        toast('删除成功')
+        GetImagesList()
+    })
+    .finally(()=>{
+        loading.value=false
+    })
+}
 </script>
 
 <template>
@@ -43,8 +75,12 @@ defineExpose({
                         <el-image :preview-src-list="[item.url]" :initial-index="0" :src="item.url" fit="cover" class="w-full h-[150px]"></el-image>
                         <div class="image-title">{{ item.name }}</div>
                         <div class="flex justify-center px-2">
-                            <el-button type="primary" size="small" @click="" text>重命名</el-button>
-                            <el-button type="primary" size="small" @click="" text>删除</el-button>
+                            <el-button type="primary" size="small" @click="handleEdit(item)" text>重命名</el-button>
+                            <el-popconfirm title="是否要删除此图片?" confirm-button-text="确认" cancel-button-text="取消" @confirm="handleDelete(item.id)" >
+                                <template #reference>
+                                    <el-button type="primary" size="small" text>删除</el-button>
+                                </template>
+                            </el-popconfirm>
                         </div>
                     </el-card>
                 </el-col>
