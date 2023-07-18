@@ -40,7 +40,7 @@ defineExpose({
             <el-row :gutter="10">
                 <el-col v-for="(item,index) in imageList" :key="index" :span="6" :offset="0">
                     <el-card shadow="hover"  class="relative mb-3" :body-style="{padding:0}">
-                        <el-image :src="item.url" fit="cover" class="w-full h-[150px]"></el-image>
+                        <el-image :preview-src-list="[item.url]" :initial-index="0" :src="item.url" fit="cover" class="w-full h-[150px]"></el-image>
                         <div class="image-title">{{ item.name }}</div>
                         <div class="flex justify-center px-2">
                             <el-button type="primary" size="small" @click="" text>重命名</el-button>
