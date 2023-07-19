@@ -16,6 +16,7 @@ import CommentList from '~/pages/comment/list.vue'
 import NoticeList from '~/pages/notice/list.vue'
 import SettingBase from '~/pages/setting/base.vue'
 import CouponList from '~/pages/coupon/list.vue'
+import ManagerList from '~/pages/manager/list.vue'
 
 
 //默认路由，所有用户共享
@@ -120,6 +121,13 @@ const asyncRoutes=[
         name:'/setting/base',
         meta:{
             title:'配置'
+        }
+    },{
+        path:"/manager/list",
+        component:ManagerList,
+        name:'/manager/list',
+        meta:{
+            title:'管理员管理'
         }
     }
 ]
