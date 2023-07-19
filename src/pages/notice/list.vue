@@ -1,6 +1,8 @@
 <script setup>
-import {ref} from 'vue'
-import {getNoticeList} from '~/api/notice'
+import {ref,reactive} from 'vue'
+import {getNoticeList,addNotice} from '~/api/notice'
+import FormDrawer from '~/components/FormDrawer.vue'
+import {toast} from '~/composables/util'
 // 表格数据
 const tableData = ref([])
 
@@ -30,13 +32,58 @@ getData()
 const handleDelete=(id)=>{
     console.log(id);
 }
+
+//新增公告相关
+const form=reactive({
+    title:'',
+    content:''
+})
+
+const formDrawerRef=ref(null)
+const formRef=ref(null)
+
+const openDrawer=()=>{
+    formDrawerRef.value.open()
+}
+
+const handeSubmit=()=>{
+    formRef.value.validate((valid)=>{
+        if(!valid){
+            return
+        }
+        formDrawerRef.value.showLoading()
+        addNotice(form)
+        .then(res=>{
+            toast('新增成功')
+            getData()
+        })
+        .finally(()=>{
+            formDrawerRef.value.hideLoading()
+            formDrawerRef.value.close()
+        })
+    })
+}
+
+const rules={
+    title:[{
+        required:true,
+        message:'公告标题不能为空',
+        trigger:'blur'
+    }],
+    content:[{
+        required:true,
+        message:'公告内容不能为空',
+        trigger:'blur'
+    }]
+}
+
 </script>
 
 <template>
     <el-card shadow="never" class="border-0">
         <!-- 新增 | 刷新 -->
         <div class="flex items-center justify-between mb-4">
-            <el-button type="primary" size="small" @click="">新增</el-button>
+            <el-button type="primary" size="small" @click="openDrawer">新增</el-button>
             <el-tooltip content="刷新数据" placement="bottom" effect="dark">
                 <el-button @click="getData()" type="primary" text>
                     <el-icon :size="20"><Refresh/></el-icon>
@@ -66,6 +113,18 @@ const handleDelete=(id)=>{
                 @current-change="getData" :page-size="limit" layout=" prev, pager, next"
                 :total="total" :current-page="currentPage" background/>
         </div>
+        <!-- 抽屉 -->
+        <FormDrawer title="新增公告" ref="formDrawerRef" @submit="handeSubmit">
+            <el-form :model="form" ref="formRef" :rules="rules" label-width="80px" :inline="false">
+                <el-form-item prop="title" label="公告标题">
+                    <el-input v-model="form.title" placeholder="公告标题"></el-input>
+                </el-form-item>
+                <el-form-item prop="content" label="公告内容">
+                    <el-input v-model="form.content" type="textarea" :rows="5" placeholder="公告内容"></el-input>
+                </el-form-item>
+            </el-form>
+            
+        </FormDrawer>
     </el-card>
     
 </template>
