@@ -16,13 +16,15 @@ defineEmits(['edit','delete'])
         <el-button class="ml-auto px-1" text type="primary" size="small" @click.stop="$emit('edit')">
             <el-icon :size="12"><Edit/></el-icon>
         </el-button>  
-        <el-popconfirm title="是否要删除此分类?" confirm-button-text="确认" cancel-button-text="取消" @confirm="$emit('delete')" >
-            <template #reference>
-                <el-button class="px-1" text type="primary" size="small" >
-                    <el-icon :size="12"><close/></el-icon>
-                </el-button>  
-            </template>
-        </el-popconfirm>
+        <span @click.stop="()=>{}">
+            <el-popconfirm title="是否要删除此分类?" confirm-button-text="确认" cancel-button-text="取消" @confirm="$emit('delete')" >
+                <template #reference>
+                    <el-button class="px-1" text type="primary" size="small" >
+                        <el-icon :size="12"><close/></el-icon>
+                    </el-button>  
+                </template>
+            </el-popconfirm>
+        </span>
     </div>
 </template>
 
