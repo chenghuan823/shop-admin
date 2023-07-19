@@ -1,7 +1,7 @@
 <script setup>
 import {ref,reactive,computed} from 'vue'
 import {getNoticeList,addNotice,updateNotice,deleteNotice} from '~/api/notice'
-import {getManagerList} from '~/api/manager'
+import {getManagerList,updateManageStatus} from '~/api/manager'
 import FormDrawer from '~/components/FormDrawer.vue'
 import {toast} from '~/composables/util'
 
@@ -34,7 +34,10 @@ const getData=(page=null)=>{
     getManagerList(currentPage.value,searchForm)
     .then(res=>{
         total.value=res.totalCount
-        tableData.value=res.list
+        tableData.value=res.list.map(o=>{
+            o.statusLoading=false
+            return o
+        })
     })
     .finally(()=>{
         loading.value=false
@@ -68,6 +71,19 @@ const handleEdit=(item)=>{
     editId.value=item.id
     resetForm(item)
     formDrawerRef.value.open()
+}
+
+//修改管理员状态
+const handleStatusChange=(status,row)=>{
+    row.statusLoading=true
+    updateManageStatus(row.id,status)
+    .then(res=>{
+        toast('修改状态成功')
+        row.status=status
+    })
+    .finally(()=>{
+        row.statusLoading=false
+    })
 }
 
 //删除公告
@@ -176,21 +192,23 @@ const rules={
             </el-table-column>
             <el-table-column label="状态" width="120" >
                 <template #default="{row}">
-                    <el-switch :modelValue="row.status" :active-value="1" :inactive-value="0">
+                    <el-switch @change="handleStatusChange($event,row)" :modelValue="row.status" :active-value="1" :inactive-value="0" :loading="row.statusLoading" :disabled="row.super==1">
                     </el-switch>
                     
-                </template>
+                </template> 
             </el-table-column>
             <el-table-column label="操作" align="center">
                 <template #default="scope">
-                    <el-button size="small" text type="primary" @click="handleEdit(scope.row)"
-                    >修改</el-button>
-
-                    <el-popconfirm title="是否要删除此管理员?" confirm-button-text="确认" cancel-button-text="取消" @confirm="handleDelete(scope.row.id)" >
-                        <template #reference>
-                            <el-button text type="primary" size="small">删除</el-button>  
-                        </template>
-                    </el-popconfirm>
+                    <small v-if="scope.row.super==1" class="text-sm text-gray-500">暂无操作</small>
+                    <div v-else>
+                        <el-button size="small" text type="primary" @click="handleEdit(scope.row)"
+                        >修改</el-button>
+                        <el-popconfirm title="是否要删除此管理员?" confirm-button-text="确认" cancel-button-text="取消" @confirm="handleDelete(scope.row.id)" >
+                            <template #reference>
+                                <el-button text type="primary" size="small">删除</el-button>  
+                            </template>
+                        </el-popconfirm>
+                    </div>
                 </template>
             </el-table-column>
         </el-table>

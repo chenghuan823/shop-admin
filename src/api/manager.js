@@ -35,3 +35,10 @@ export function getManagerList(page,query={}){
     r=r ? "?"+r :''
     return service.get(`/admin/manager/${page}${r}`)
 }
+
+//修改管理员状态
+export function updateManageStatus(id,status){
+    return service.post(`/admin/manager/${id}/update_status`,{
+        status
+    })
+}
