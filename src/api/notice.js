@@ -9,3 +9,13 @@ export function getNoticeList(page){
 export function addNotice(data){
     return service.post(`/admin/notice`,data)
 }
+
+//修改公告
+export function updateNotice(id,data){
+    return service.post(`/admin/notice/${id}`,data)
+}
+
+//删除公告
+export function deleteNotice(id,data){
+    return service.post(`/admin/notice/${id}/delete`)
+}
