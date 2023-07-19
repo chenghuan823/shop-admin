@@ -1,5 +1,5 @@
 <script setup>
-import {ref,onMounted,onBeforeUnmount,computed} from 'vue'
+import {ref,onBeforeUnmount,computed} from 'vue'
 import ImageAside from '~/components/ImageAside.vue'
 import ImageMain from '~/components/ImageMain.vue'
 let windowHeight= ref(window.innerHeight || document.body.clientHeight)
@@ -29,11 +29,16 @@ onBeforeUnmount(() => {
     window.removeEventListener("resize",getHeight)
 })
 
+//点击上传图片
+const handleOpenUpload=()=>{
+    ImageMainRef.value.openUploadFile()
+}
 </script>
 <template>
     <el-container class="bg-white rounded" :style="{height:h+'px'}">
         <el-header class="image-header">
             <el-button type="primary" size="small" @click="handleOpenCreate">新增图片分类</el-button>
+            <el-button type="warning" size="small" @click="handleOpenUpload">上传图片</el-button>
             
         </el-header>
         <el-container>

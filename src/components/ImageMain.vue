@@ -2,6 +2,13 @@
 import {ref,reactive} from 'vue'
 import {getImagesList,updateImageList,deleteImageList} from '~/api/image'
 import {showPrompt,toast} from '~/composables/util'
+import UploadFile from '~/components/UploadFile.vue'
+
+//上传图片
+const drawer=ref(false)
+const openUploadFile=()=>{
+    drawer.value=true
+}
 
 const imageList=ref([])
 const loading=ref(false)
@@ -30,8 +37,14 @@ const loadData=(id)=>{
     GetImagesList()
 }
 
+//图片上传成功
+const handleUploadSuccess=()=>{
+    GetImagesList()
+}
+
 defineExpose({
-    loadData
+    loadData,
+    openUploadFile
 })
 //点击重命名
 const handleEdit=(item)=>{
@@ -90,6 +103,11 @@ const handleDelete=(id)=>{
             <el-pagination background layout="prev,pager,next" :total="state.total" :current-page="state.page" :page-size="state.limit" @current-change="GetImagesList"/>
         </div>
     </el-main>
+
+    <el-drawer :close-on-click-modal="false" v-model="drawer" title="上传图片">
+        <UploadFile :data="{image_class_id}" @success="handleUploadSuccess"/>
+    </el-drawer>
+
 </template>
 
 <style scoped>

@@ -14,3 +14,5 @@ export function deleteImageList(ids){
 export function updateImageList(id,name){
     return service.post(`/admin/image/${id}`,{name})
 }
+
+export const uploadImageAction="/api/admin/image/upload"
