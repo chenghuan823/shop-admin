@@ -136,7 +136,7 @@ const asyncRoutes=[
         component:AccessList,
         name:'/access/list',
         meta:{
-            title:'菜单权限管理'
+            title:'权限管理'
         }
     }
 ]
