@@ -76,31 +76,39 @@ const {
         <FormDrawer :title="drawerTitle" ref="formDrawerRef" @submit="handeSubmit">
             <el-form :model="form" ref="formRef" :rules="rules" label-width="80px" :inline="false">
                 <el-form-item prop="rule_id" label="上级菜单">
-                    <el-cascader v-model="form.rule_id" :options="options" :props="{label:'name',children:'child',checkStrictly:true,emitPath:false}" placeholder="请选择上级菜单"/>
+                    <el-cascader v-model="form.rule_id" :options="options" :props="{label:'name',children:'child',checkStrictly:true,emitPath:false,value:'id'}" placeholder="请选择上级菜单"/>
                 </el-form-item>
                 <el-form-item prop="menu" label="菜单/规则">
-                    <el-input v-model="form.menu"></el-input>
+                    <el-radio-group v-model="form.menu">
+                        <el-radio :label="1" size="small" border>菜单</el-radio>
+                        <el-radio :label="0" size="small" border>规则</el-radio>
+                    </el-radio-group>
                 </el-form-item>
-                <el-form-item prop="name" label="菜单/权限名称">
-                    <el-input v-model="form.name"></el-input>
+                <el-form-item prop="name" label="名称">
+                    <el-input v-model="form.name" style="width:30%" placeholder="名称"></el-input>
                 </el-form-item>
-                <el-form-item prop="icon" label="菜单图标">
+                <el-form-item prop="icon" label="菜单图标" v-if="form.menu==1">
                     <el-input v-model="form.icon"></el-input>
                 </el-form-item>
-                <el-form-item prop="frontpath" label="前端路由">
-                    <el-input v-model="form.frontpath"></el-input>
+                <el-form-item prop="frontpath" label="前端路由"  v-if="form.menu==1 && form.rule_id>0">
+                    <el-input v-model="form.frontpath" placeholder="前端路由"></el-input>
                 </el-form-item>
-                <el-form-item prop="condition" label="后端规则">
-                    <el-input v-model="form.condition"></el-input>
+                <el-form-item prop="condition" label="后端规则" v-if="form.menu==0">
+                    <el-input v-model="form.condition" placeholder="后端规则"></el-input>
                 </el-form-item>
-                <el-form-item prop="method" label="请求方式">
-                    <el-input v-model="form.method"></el-input>
+                <el-form-item prop="method" label="请求方式" v-if="form.menu==0">
+                    <el-select v-model="form.method" placeholder="请选择请求方式">
+                        <el-option v-for="item in ['GET','POST','PUT','DELETE']"
+                            :key="item"
+                            :label="item"
+                            :value="item">
+                        </el-option>
+                    </el-select>
                 </el-form-item>
                 <el-form-item prop="order" label="排序">
-                    <el-input v-model="form.order"></el-input>
+                    <el-input-number :max="1000" :min="0" v-model="form.order"/>
                 </el-form-item>
             </el-form>
-
         </FormDrawer>
     </el-card>
 </template>
