@@ -1,7 +1,6 @@
 <script setup>
 import {ref,reactive,computed} from 'vue'
-import {getNoticeList,addNotice,updateNotice,deleteNotice} from '~/api/notice'
-import {getManagerList,updateManageStatus} from '~/api/manager'
+import {getManagerList,updateManageStatus,createManager,updateManager,deleteManager} from '~/api/manager'
 import FormDrawer from '~/components/FormDrawer.vue'
 import {toast} from '~/composables/util'
 
@@ -13,6 +12,8 @@ const resetSearchForm=()=>{
     searchForm.keyword=''
     getData()
 }
+
+const roles=ref([])
 
 // 表格数据
 const tableData = ref([])
@@ -33,11 +34,14 @@ const getData=(page=null)=>{
     loading.value=true
     getManagerList(currentPage.value,searchForm)
     .then(res=>{
+        console.log(res);
+
         total.value=res.totalCount
         tableData.value=res.list.map(o=>{
             o.statusLoading=false
             return o
         })
+        roles.value=res.roles
     })
     .finally(()=>{
         loading.value=false
@@ -46,8 +50,11 @@ const getData=(page=null)=>{
 getData()
 
 const form=reactive({
-    title:'',
-    content:''
+    username:'',
+    password:'',
+    role_id:null,
+    status:1,
+    avatar:''
 })
 
 const formDrawerRef=ref(null)
@@ -86,10 +93,10 @@ const handleStatusChange=(status,row)=>{
     })
 }
 
-//删除公告
+//删除
 const handleDelete=(id)=>{
     loading.value=true
-    deleteNotice(id)
+    deleteManager(id)
     .then(res=>{
         toast('删除成功')
         getData()
@@ -104,8 +111,11 @@ const handleDelete=(id)=>{
 const openDrawer=()=>{
     editId.value=0
     resetForm({
-        title:'',
-        content:''
+        username:'',
+        password:'',
+        role_id:null,
+        status:1,
+        avatar:''
     })
     formDrawerRef.value.open()
 }
@@ -116,7 +126,7 @@ const handeSubmit=()=>{
             return
         }
         formDrawerRef.value.showLoading()
-        const fun=editId.value ? updateNotice(editId.value,form) : addNotice(form)
+        const fun=editId.value ? updateManager(editId.value,form) : createManager(form)
         fun
         .then(res=>{
             toast(drawerTitle.value+'成功')
@@ -129,18 +139,7 @@ const handeSubmit=()=>{
     })
 }
 
-const rules={
-    title:[{
-        required:true,
-        message:'公告标题不能为空',
-        trigger:'blur'
-    }],
-    content:[{
-        required:true,
-        message:'公告内容不能为空',
-        trigger:'blur'
-    }]
-}
+const rules={}
 
 </script>
 
@@ -177,7 +176,7 @@ const rules={
             <el-table-column label="管理员" width="200" >
                 <template #default="{row}">
                     <div class="flex items-center">
-                        <el-avatar icon="el-icon-user-solid" :size="40" :src="row.avatar" ></el-avatar>
+                        <el-avatar :size="40" :src="row.avatar"></el-avatar>
                         <div class="ml-3">
                             <h6>{{ row.username }}</h6>
                             <small>ID:{{ row.id }}</small>
@@ -185,7 +184,7 @@ const rules={
                     </div>
                 </template>
             </el-table-column>
-            <el-table-column label="所属管理员" align="center" >
+            <el-table-column label="所属角色" align="center" >
                 <template #default="{row}">
                     {{ row.role?.name || '-' }}
                 </template>
@@ -194,7 +193,6 @@ const rules={
                 <template #default="{row}">
                     <el-switch @change="handleStatusChange($event,row)" :modelValue="row.status" :active-value="1" :inactive-value="0" :loading="row.statusLoading" :disabled="row.super==1">
                     </el-switch>
-                    
                 </template> 
             </el-table-column>
             <el-table-column label="操作" align="center">
@@ -221,17 +219,31 @@ const rules={
         <!-- 抽屉 -->
         <FormDrawer :title="drawerTitle" ref="formDrawerRef" @submit="handeSubmit">
             <el-form :model="form" ref="formRef" :rules="rules" label-width="80px" :inline="false">
-                <el-form-item prop="title" label="公告标题">
-                    <el-input v-model="form.title" placeholder="公告标题"></el-input>
+                <el-form-item prop="username" label="用户名">
+                    <el-input v-model="form.username" placeholder=""></el-input>
                 </el-form-item>
-                <el-form-item prop="content" label="公告内容">
-                    <el-input v-model="form.content" type="textarea" :rows="5" placeholder="公告内容"></el-input>
+                <el-form-item prop="password" label="密码">
+                    <el-input v-model="form.password" type="password" :rows="5"></el-input>
+                </el-form-item>
+                <el-form-item prop="avator" label="头像">
+                    <el-input v-model="form.avator" type="textarea" :rows="5" placeholder="公告内容"></el-input>
+                </el-form-item>
+                <el-form-item prop="role_id" label="所属角色">
+                    <el-select v-model="form.role_id" value-key="" placeholder="选择所属角色">
+                        <el-option v-for="item in roles"
+                            :key="item.id"
+                            :label="item.name"
+                            :value="item.id">
+                        </el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item prop="status" label="状态">
+                    <el-switch v-model="form.status" :active-value="1" :inactive-value="0">
+                    </el-switch>
                 </el-form-item>
             </el-form>
-            
         </FormDrawer>
     </el-card>
-    
 </template>
 
 <style scoped>
