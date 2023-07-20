@@ -1,6 +1,6 @@
 <script setup>
 import {computed,ref } from 'vue'
-import { useRouter,useRoute } from 'vue-router'
+import { useRouter,useRoute,onBeforeRouteUpdate } from 'vue-router'
 import {useStore} from 'vuex'
 const store=useStore()
 const router =useRouter()
@@ -8,7 +8,10 @@ const route =useRoute()
 
 //默认激活菜单
 const defaultActive=ref(route.path)
-
+//监听路由变化
+onBeforeRouteUpdate((to,from)=>{
+    defaultActive.value=to.path
+})
 const asideMenus = computed(()=>store.state.menus)
 
 const handleSelect=(path)=>{
