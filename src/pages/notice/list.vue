@@ -1,9 +1,9 @@
 <script setup>
-import {ref,reactive,computed} from 'vue'
-import {getNoticeList,addNotice,updateNotice,deleteNotice} from '~/api/notice'
+import { ref, reactive, computed } from 'vue'
+import { getNoticeList, addNotice, updateNotice, deleteNotice } from '~/api/notice'
 import FormDrawer from '~/components/FormDrawer.vue'
-import {toast} from '~/composables/util'
-import {useInitTable} from '~/composables/useCommon'
+import { toast } from '~/composables/util'
+import { useInitTable, useInitForm } from '~/composables/useCommon'
 
 const {
     tableData,
@@ -12,93 +12,53 @@ const {
     total,
     limit,
     getData
-}= useInitTable({
-    getList:getNoticeList,
+} = useInitTable({
+    getList: getNoticeList,
 })
 
-const form=reactive({
-    title:'',
-    content:''
+const {
+    form,
+    formDrawerRef,
+    formRef,
+    rules,
+    drawerTitle,
+    handeSubmit,
+    openDrawer,
+    handleEdit
+} = useInitForm({
+    form: {
+        title: '',
+        content: ''
+    },
+    rules: {
+        title: [{
+            required: true,
+            message: '公告标题不能为空',
+            trigger: 'blur'
+        }],
+        content: [{
+            required: true,
+            message: '公告内容不能为空',
+            trigger: 'blur'
+        }]
+    },
+    getData,
+    update: updateNotice,
+    create: addNotice
 })
 
-const formDrawerRef=ref(null)
-const formRef=ref(null)
-//修改公告
-    //修改和新增打开抽屉显示不同的title
-const editId=ref(0)
-const drawerTitle=computed(()=>editId.value ? '修改' : '新增')
-    //重置表单
-function resetForm(row=false){
-    if(formRef.value){
-        formRef.value.clearValidate()
-    }
-    if(row){
-        for(const key in form){
-            form[key]=row[key]
-        }
-    }
-}
-const handleEdit=(item)=>{
-    editId.value=item.id
-    resetForm(item)
-    formDrawerRef.value.open()
-}
 
 //删除公告
-const handleDelete=(id)=>{
-    loading.value=true
+const handleDelete = (id) => {
+    loading.value = true
     deleteNotice(id)
-    .then(res=>{
-        toast('删除成功')
-        getData()
-    })
-    .finally(()=>{
-        loading.value=false
-    })
-}
-
-//新增公告相关
-
-
-const openDrawer=()=>{
-    editId.value=0
-    resetForm({
-        title:'',
-        content:''
-    })
-    formDrawerRef.value.open()
-}
-
-const handeSubmit=()=>{
-    formRef.value.validate((valid)=>{
-        if(!valid){
-            return
-        }
-        formDrawerRef.value.showLoading()
-        const fun=editId.value ? updateNotice(editId.value,form) : addNotice(form)
-        fun
-        .then(res=>{
-            toast(drawerTitle.value+'成功')
-            getData(editId.value ? false : 1)
-            formDrawerRef.value.close()
+        .then(res => {
+            toast('删除成功')
+            getData()
         })
-        .finally(()=>{
-            formDrawerRef.value.hideLoading()
+        .finally(() => {
+            loading.value = false
         })
-    })
-}
-
-const rules={
-    title:[{
-        required:true,
-        message:'公告标题不能为空',
-        trigger:'blur'
-    }],
-    content:[{
-        required:true,
-        message:'公告内容不能为空',
-        trigger:'blur'
-    }]
 }
 
 </script>
@@ -110,7 +70,9 @@ const rules={
             <el-button type="primary" size="small" @click="openDrawer">新增</el-button>
             <el-tooltip content="刷新数据" placement="bottom" effect="dark">
                 <el-button @click="getData()" type="primary" text>
-                    <el-icon :size="20"><Refresh/></el-icon>
+                    <el-icon :size="20">
+                        <Refresh />
+                    </el-icon>
                 </el-button>
             </el-tooltip>
         </div>
@@ -120,12 +82,12 @@ const rules={
             <el-table-column prop="create_time" label="发布时间" width="380" />
             <el-table-column label="操作" align="center">
                 <template #default="scope">
-                    <el-button size="small" text type="primary" @click="handleEdit(scope.row)"
-                    >修改</el-button>
+                    <el-button size="small" text type="primary" @click="handleEdit(scope.row)">修改</el-button>
 
-                    <el-popconfirm title="是否要删除此公告?" confirm-button-text="确认" cancel-button-text="取消" @confirm="handleDelete(scope.row.id)" >
+                    <el-popconfirm title="是否要删除此公告?" confirm-button-text="确认" cancel-button-text="取消"
+                        @confirm="handleDelete(scope.row.id)">
                         <template #reference>
-                            <el-button text type="primary" size="small">删除</el-button>  
+                            <el-button text type="primary" size="small">删除</el-button>
                         </template>
                     </el-popconfirm>
                 </template>
@@ -133,9 +95,8 @@ const rules={
         </el-table>
         <!-- 分页 -->
         <div class="flex items-center justify-center mt-5">
-            <el-pagination
-                @current-change="getData" :page-size="limit" layout=" prev, pager, next"
-                :total="total" :current-page="currentPage" background/>
+            <el-pagination @current-change="getData" :page-size="limit" layout=" prev, pager, next" :total="total"
+                :current-page="currentPage" background />
         </div>
         <!-- 抽屉 -->
         <FormDrawer :title="drawerTitle" ref="formDrawerRef" @submit="handeSubmit">
@@ -147,12 +108,9 @@ const rules={
                     <el-input v-model="form.content" type="textarea" :rows="5" placeholder="公告内容"></el-input>
                 </el-form-item>
             </el-form>
-            
+
         </FormDrawer>
     </el-card>
-    
 </template>
 
-<style scoped>
-
-</style>
+<style scoped></style>

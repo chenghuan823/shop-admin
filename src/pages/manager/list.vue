@@ -4,7 +4,7 @@ import {getManagerList,updateManageStatus,createManager,updateManager,deleteMana
 import FormDrawer from '~/components/FormDrawer.vue'
 import {toast} from '~/composables/util'
 import ChooseImage from '~/components/ChooseImage.vue'
-import {useInitTable} from '~/composables/useCommon'
+import {useInitTable,useInitForm} from '~/composables/useCommon'
 const roles=ref([])
 
 const {
@@ -31,36 +31,29 @@ const {
     }
 })
 
-const form=reactive({
-    username:'',
-    password:'',
-    role_id:null,
-    status:1,
-    avatar:''
+const {
+    form,
+    formDrawerRef,
+    formRef,
+    rules,
+    drawerTitle,
+    handeSubmit,
+    openDrawer,
+    handleEdit
+}=useInitForm({
+    form:{
+        username: "",
+        password: "",
+        role_id: null,
+        status: 1,
+        avatar: "",
+    },
+    getData,
+    update:updateManager,
+    create:createManager
 })
 
-const formDrawerRef=ref(null)
-const formRef=ref(null)
-//修改公告
-    //修改和新增打开抽屉显示不同的title
-const editId=ref(0)
-const drawerTitle=computed(()=>editId.value ? '修改' : '新增')
-    //重置表单
-function resetForm(row=false){
-    if(formRef.value){
-        formRef.value.clearValidate()
-    }
-    if(row){
-        for(const key in form){
-            form[key]=row[key]
-        }
-    }
-}
-const handleEdit=(item)=>{
-    editId.value=item.id
-    resetForm(item)
-    formDrawerRef.value.open()
-}
+
 
 //修改管理员状态
 const handleStatusChange=(status,row)=>{
@@ -88,40 +81,7 @@ const handleDelete=(id)=>{
     })
 }
 
-//新增公告相关
 
-const openDrawer=()=>{
-    editId.value=0
-    resetForm({
-        username:'',
-        password:'',
-        role_id:null,
-        status:1,
-        avatar:''
-    })
-    formDrawerRef.value.open()
-}
-
-const handeSubmit=()=>{
-    formRef.value.validate((valid)=>{
-        if(!valid){
-            return
-        }
-        formDrawerRef.value.showLoading()
-        const fun=editId.value ? updateManager(editId.value,form) : createManager(form)
-        fun
-        .then(res=>{
-            toast(drawerTitle.value+'成功')
-            getData(editId.value ? false : 1)
-            formDrawerRef.value.close()
-        })
-        .finally(()=>{
-            formDrawerRef.value.hideLoading()
-        })
-    })
-}
-
-const rules={}
 
 </script>
 
