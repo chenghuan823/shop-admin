@@ -17,6 +17,9 @@ const {
     limit,
     getData
 }= useInitTable({
+    searchForm:{
+        keyword:''
+    },
     getList:getManagerList,
     onGetListSuccess:(res)=>{
         total.value=res.totalCount

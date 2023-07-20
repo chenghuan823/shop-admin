@@ -3,33 +3,18 @@ import {ref,reactive,computed} from 'vue'
 import {getNoticeList,addNotice,updateNotice,deleteNotice} from '~/api/notice'
 import FormDrawer from '~/components/FormDrawer.vue'
 import {toast} from '~/composables/util'
-// 表格数据
-const tableData = ref([])
+import {useInitTable} from '~/composables/useCommon'
 
-//加载动画
-const loading=ref(false)
-
-//分页
-const currentPage=ref(1)
-const total=ref(10)
-const limit=ref(10)
-
-//获取数据
-const getData=(page=null)=>{
-    if(typeof page=='number'){
-        currentPage.value=page
-    }
-    loading.value=true
-    getNoticeList(currentPage.value)
-    .then(res=>{
-        total.value=res.totalCount
-        tableData.value=res.list
-    })
-    .finally(()=>{
-        loading.value=false
-    })
-}
-getData()
+const {
+    tableData,
+    loading,
+    currentPage,
+    total,
+    limit,
+    getData
+}= useInitTable({
+    getList:getNoticeList,
+})
 
 const form=reactive({
     title:'',
