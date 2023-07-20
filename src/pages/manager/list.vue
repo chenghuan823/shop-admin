@@ -1,8 +1,7 @@
 <script setup>
-import {ref,reactive,computed} from 'vue'
+import {ref} from 'vue'
 import {getManagerList,updateManageStatus,createManager,updateManager,deleteManager} from '~/api/manager'
 import FormDrawer from '~/components/FormDrawer.vue'
-import {toast} from '~/composables/util'
 import ChooseImage from '~/components/ChooseImage.vue'
 import {useInitTable,useInitForm} from '~/composables/useCommon'
 const roles=ref([])
@@ -15,7 +14,9 @@ const {
     currentPage,
     total,
     limit,
-    getData
+    getData,
+    handleDelete,
+    handleStatusChange
 }= useInitTable({
     searchForm:{
         keyword:''
@@ -28,7 +29,9 @@ const {
             return o
         })
         roles.value=res.roles
-    }
+    },
+    delete:deleteManager,
+    updateStatus:updateManageStatus
 })
 
 const {
@@ -52,36 +55,6 @@ const {
     update:updateManager,
     create:createManager
 })
-
-
-
-//修改管理员状态
-const handleStatusChange=(status,row)=>{
-    row.statusLoading=true
-    updateManageStatus(row.id,status)
-    .then(res=>{
-        toast('修改状态成功')
-        row.status=status
-    })
-    .finally(()=>{
-        row.statusLoading=false
-    })
-}
-
-//删除
-const handleDelete=(id)=>{
-    loading.value=true
-    deleteManager(id)
-    .then(res=>{
-        toast('删除成功')
-        getData()
-    })
-    .finally(()=>{
-        loading.value=false
-    })
-}
-
-
 
 </script>
 

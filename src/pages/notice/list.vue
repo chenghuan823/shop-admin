@@ -1,8 +1,6 @@
 <script setup>
-import { ref, reactive, computed } from 'vue'
 import { getNoticeList, addNotice, updateNotice, deleteNotice } from '~/api/notice'
 import FormDrawer from '~/components/FormDrawer.vue'
-import { toast } from '~/composables/util'
 import { useInitTable, useInitForm } from '~/composables/useCommon'
 
 const {
@@ -11,9 +9,11 @@ const {
     currentPage,
     total,
     limit,
-    getData
+    getData,
+    handleDelete
 } = useInitTable({
     getList: getNoticeList,
+    delete:deleteNotice
 })
 
 const {
@@ -46,20 +46,6 @@ const {
     update: updateNotice,
     create: addNotice
 })
-
-
-//删除公告
-const handleDelete = (id) => {
-    loading.value = true
-    deleteNotice(id)
-        .then(res => {
-            toast('删除成功')
-            getData()
-        })
-        .finally(() => {
-            loading.value = false
-        })
-}
 
 </script>
 

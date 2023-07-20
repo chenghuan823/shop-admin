@@ -1,7 +1,7 @@
 import { ref, reactive, computed } from "vue";
 import {toast} from '~/composables/util'
 
-//列表，分页，搜索
+//列表，分页，搜索，删除，修改状态
 export function useInitTable(opt = {}) {
   // const searchForm=reactive({
   //     keyword:''
@@ -52,6 +52,33 @@ export function useInitTable(opt = {}) {
   };
   getData();
 
+  
+//修改管理员状态
+const handleStatusChange=(status,row)=>{
+    row.statusLoading=true
+    opt.updateStatus(row.id,status)
+    .then(res=>{
+        toast('修改状态成功')
+        row.status=status
+    })
+    .finally(()=>{
+        row.statusLoading=false
+    })
+}
+
+//删除
+const handleDelete=(id)=>{
+    loading.value=true
+    opt.delete(id)
+    .then(res=>{
+        toast('删除成功')
+        getData()
+    })
+    .finally(()=>{
+        loading.value=false
+    })
+}
+
   return {
     searchForm,
     resetSearchForm,
@@ -61,6 +88,8 @@ export function useInitTable(opt = {}) {
     total,
     limit,
     getData,
+    handleDelete,
+    handleStatusChange
   };
 }
 //新增，修改
