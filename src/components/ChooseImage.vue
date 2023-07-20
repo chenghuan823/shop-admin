@@ -37,7 +37,6 @@ const emit=defineEmits(["update:modelValue"])
 let urls=[]
 const handleChoose=(e)=>{
     urls=e.map(o=>o.url)
-    console.log(urls);
 }
 
 const submit=()=>{
