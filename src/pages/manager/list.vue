@@ -3,6 +3,7 @@ import {ref,reactive,computed} from 'vue'
 import {getManagerList,updateManageStatus,createManager,updateManager,deleteManager} from '~/api/manager'
 import FormDrawer from '~/components/FormDrawer.vue'
 import {toast} from '~/composables/util'
+import ChooseImage from '~/components/ChooseImage.vue'
 
 //搜索
 const searchForm=reactive({
@@ -34,8 +35,6 @@ const getData=(page=null)=>{
     loading.value=true
     getManagerList(currentPage.value,searchForm)
     .then(res=>{
-        console.log(res);
-
         total.value=res.totalCount
         tableData.value=res.list.map(o=>{
             o.statusLoading=false
@@ -226,7 +225,7 @@ const rules={}
                     <el-input v-model="form.password" type="password" :rows="5"></el-input>
                 </el-form-item>
                 <el-form-item prop="avator" label="头像">
-                    <el-input v-model="form.avator" type="textarea" :rows="5" placeholder="公告内容"></el-input>
+                    <ChooseImage v-model="form.avatar"/>
                 </el-form-item>
                 <el-form-item prop="role_id" label="所属角色">
                     <el-select v-model="form.role_id" value-key="" placeholder="选择所属角色">
