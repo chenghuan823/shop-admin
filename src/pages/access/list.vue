@@ -4,13 +4,13 @@ import ListHeader from '~/components/ListHeader.vue'
 import {getRuleList,addRule,updateRule} from '~/api/rule'
 import {useInitTable,useInitForm}from '~/composables/useCommon'
 import FormDrawer from '~/components/FormDrawer.vue'
+import IconSelect from '~/components/IconSelect.vue'
 const options=ref([])
 const defaultEexpandedKeys=ref([])
 const {
     loading,
     tableData,
     getData,
-
 } =useInitTable({
     getList:getRuleList,
     onGetListSuccess:(res)=>{
@@ -88,7 +88,7 @@ const {
                     <el-input v-model="form.name" style="width:30%" placeholder="名称"></el-input>
                 </el-form-item>
                 <el-form-item prop="icon" label="菜单图标" v-if="form.menu==1">
-                    <el-input v-model="form.icon"></el-input>
+                    <IconSelect v-model="form.icon"/>
                 </el-form-item>
                 <el-form-item prop="frontpath" label="前端路由"  v-if="form.menu==1 && form.rule_id>0">
                     <el-input v-model="form.frontpath" placeholder="前端路由"></el-input>
