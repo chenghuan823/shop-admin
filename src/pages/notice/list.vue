@@ -2,6 +2,7 @@
 import { getNoticeList, addNotice, updateNotice, deleteNotice } from '~/api/notice'
 import FormDrawer from '~/components/FormDrawer.vue'
 import { useInitTable, useInitForm } from '~/composables/useCommon'
+import ListHeader from '~/components/ListHeader.vue'
 
 const {
     tableData,
@@ -52,16 +53,7 @@ const {
 <template>
     <el-card shadow="never" class="border-0">
         <!-- 新增 | 刷新 -->
-        <div class="flex items-center justify-between mb-4">
-            <el-button type="primary" size="small" @click="openDrawer">新增</el-button>
-            <el-tooltip content="刷新数据" placement="bottom" effect="dark">
-                <el-button @click="getData()" type="primary" text>
-                    <el-icon :size="20">
-                        <Refresh />
-                    </el-icon>
-                </el-button>
-            </el-tooltip>
-        </div>
+        <ListHeader @create="openDrawer" @refresh="getData" />
         <!-- 表格区域 -->
         <el-table :data="tableData" stripe style="width:100%" v-loading="loading">
             <el-table-column prop="title" label="公告标题" width="180" />

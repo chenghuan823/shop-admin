@@ -2,6 +2,7 @@
 import {ref} from 'vue'
 import {getManagerList,updateManageStatus,createManager,updateManager,deleteManager} from '~/api/manager'
 import FormDrawer from '~/components/FormDrawer.vue'
+import ListHeader from '~/components/ListHeader.vue'
 import ChooseImage from '~/components/ChooseImage.vue'
 import {useInitTable,useInitForm} from '~/composables/useCommon'
 const roles=ref([])
@@ -76,16 +77,8 @@ const {
                 </el-col>
             </el-row>
         </el-form>
+        <ListHeader @create="openDrawer" @refresh="getData" />
         
-        <!-- 新增 | 刷新 -->
-        <div class="flex items-center justify-between mb-4">
-            <el-button type="primary" size="small" @click="openDrawer">新增</el-button>
-            <el-tooltip content="刷新数据" placement="bottom" effect="dark">
-                <el-button @click="getData()" type="primary" text>
-                    <el-icon :size="20"><Refresh/></el-icon>
-                </el-button>
-            </el-tooltip>
-        </div>
         <!-- 表格区域 -->
         <el-table :data="tableData" stripe style="width:100%" v-loading="loading">
             <el-table-column label="管理员" width="200" >
