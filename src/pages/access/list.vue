@@ -1,7 +1,7 @@
 <script setup>
 import {ref} from 'vue'
 import ListHeader from '~/components/ListHeader.vue'
-import {getRuleList,addRule,updateRule} from '~/api/rule'
+import {getRuleList,addRule,updateRule,deleteRule,updateRuleStatus} from '~/api/rule'
 import {useInitTable,useInitForm}from '~/composables/useCommon'
 import FormDrawer from '~/components/FormDrawer.vue'
 import IconSelect from '~/components/IconSelect.vue'
@@ -11,13 +11,17 @@ const {
     loading,
     tableData,
     getData,
+    handleDelete,
+    handleStatusChange
 } =useInitTable({
     getList:getRuleList,
     onGetListSuccess:(res)=>{
         tableData.value=res.list
         defaultEexpandedKeys.value=res.list.map(o=>o.id)
         options.value=res.rules
-    }
+    },
+    delete:deleteRule,
+    updateStatus:updateRuleStatus
 })
 
 const {
@@ -47,6 +51,12 @@ const {
     update: updateRule,
     create: addRule
 })
+//添加子组件
+const addChild=(id)=>{
+    openDrawer()
+    form.rule_id=id
+    form.status=1
+}
 </script>
 
 <template>
@@ -65,10 +75,15 @@ const {
                         {{ data.name }}
                     </span>
                     <div class="ml-auto">
-                        <el-switch :modelValue="data.status" :active-value="1" :inactive-value="0"></el-switch>
+                        <el-switch  @change="handleStatusChange($event,data)" :modelValue="data.status" :active-value="1" :inactive-value="0"></el-switch>
                         <el-button type="primary" size="small" @click.stop="handleEdit(data)" text>修改</el-button>
-                        <el-button type="primary" size="small" @click="" text>增加</el-button>
-                        <el-button type="primary" size="small" @click="" text>删除</el-button>
+                        <el-button type="primary" size="small" @click.stop="addChild(data.id)" text>增加</el-button>
+                        <el-popconfirm title="是否要删除此记录?" confirm-button-text="确认" cancel-button-text="取消" @confirm="handleDelete(data.id)" >
+                            <template #reference>
+                                <el-button type="primary" size="small" @click.stop="" text>删除</el-button>
+                            </template>
+                        </el-popconfirm>
+                        
                     </div>
                 </div>
             </template>
