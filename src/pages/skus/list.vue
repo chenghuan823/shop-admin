@@ -2,6 +2,7 @@
 import {ref} from 'vue'
 import { getSkusList, addSkus, updateSkus, deleteSkus,updateSkusStatus } from '~/api/skus'
 import FormDrawer from '~/components/FormDrawer.vue'
+import TagInput from '~/components/TagInput.vue'
 import { useInitTable, useInitForm } from '~/composables/useCommon'
 import ListHeader from '~/components/ListHeader.vue'
 import {toast} from '~/composables/util'
@@ -32,8 +33,8 @@ const {
     handleEdit
 } = useInitForm({
     form: {
-        defalut: '',
-        name: '',
+        default:'',
+        name:'',
         status:1,
         order:50
     },
@@ -89,7 +90,7 @@ const {
                 :current-page="currentPage" background />
         </div>
         <!-- 抽屉 -->
-        <FormDrawer :title="drawerTitle" ref="formDrawerRef" @submit="handeSubmit">
+        <FormDrawer destroyOnClose :title="drawerTitle" ref="formDrawerRef" @submit="handeSubmit">
             <el-form :model="form" ref="formRef" :rules="rules" label-width="80px" :inline="false">
                 <el-form-item prop="name" style="width:50%" label="规格名称">
                     <el-input v-model="form.name" placeholder="角色名称"></el-input>
@@ -103,7 +104,7 @@ const {
                     </el-switch>
                 </el-form-item>
                 <el-form-item prop="default" label="规格值">
-                    <el-input v-model="form.default" placeholder="角色名称"></el-input>
+                    <TagInput v-model="form.default" />
                 </el-form-item>
             </el-form>
         </FormDrawer>

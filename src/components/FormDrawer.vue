@@ -10,7 +10,7 @@ const props=defineProps({
         type:String,
         default:"45%"
     },
-    destoryOnClose:{
+    destroyOnClose:{
         type:Boolean,
         default:false
     },
@@ -41,7 +41,7 @@ defineExpose({
 </script>
 
 <template>
-    <el-drawer :close-on-click-modal="false" :size="size" v-model="showDrawer" :title="title" :destory-on-close="destoryOnClose">
+    <el-drawer :close-on-click-modal="false" :size="size" v-model="showDrawer" :title="title" :destroy-on-close="destroyOnClose">
         <div class="formDrawer">
             <div class="body">
                 <slot></slot>
