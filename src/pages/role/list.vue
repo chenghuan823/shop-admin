@@ -1,5 +1,7 @@
 <script setup>
+import {ref} from 'vue'
 import { getRoleList, addRole, updateRole, deleteRole,updateRoleStatus } from '~/api/role'
+import {getRuleList} from '~/api/rule'
 import FormDrawer from '~/components/FormDrawer.vue'
 import { useInitTable, useInitForm } from '~/composables/useCommon'
 import ListHeader from '~/components/ListHeader.vue'
@@ -51,6 +53,25 @@ const {
     create: addRole
 })
 
+const setRoleFormDrawerRef=ref(null)
+const ruleList=ref([])
+const treeHeight=ref(0)
+const roleId=ref(0)
+const openSetRole=(row)=>{
+    roleId.value=row.id
+    treeHeight.value=window.innerHeight -170
+    getRuleList(1)
+    .then(res=>{
+        ruleList.value=res.list
+        console.log(res);
+        setRoleFormDrawerRef.value.open()
+
+    })
+}
+const handeSetRoleSubmit=()=>{
+
+}
+
 </script>
 
 <template>
@@ -69,6 +90,7 @@ const {
             </el-table-column>
             <el-table-column label="操作" align="center">
                 <template #default="scope">
+                    <el-button size="small" text type="primary" @click="openSetRole(scope.row)">配置权限</el-button>
                     <el-button size="small" text type="primary" @click="handleEdit(scope.row)">修改</el-button>
 
                     <el-popconfirm title="是否要删除此公告?" confirm-button-text="确认" cancel-button-text="取消"
@@ -99,7 +121,11 @@ const {
                     </el-switch>
                 </el-form-item>
             </el-form>
-
+        </FormDrawer>
+        <!-- 权限配置树形 -->
+        <FormDrawer title="权限配置" ref="setRoleFormDrawerRef" @submit="handeSetRoleSubmit">
+            <el-tree  :data="ruleList" node-key="" :props="{label:'name',children:'child'}" :height="treeHeight" empty-text="" show-checkbox="false" highlight-current="true" @node-click=""></el-tree>
+            
         </FormDrawer>
     </el-card>
 </template>
