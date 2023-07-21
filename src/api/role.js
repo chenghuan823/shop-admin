@@ -1,21 +1,21 @@
 import service from '~/axios'
 
-//公告列表
+//角色列表
 export function getRoleList(page){
     return service.get(`/admin/role/${page}`)
 }
 
-//增加公告
+//增加角色
 export function addRole(data){
     return service.post(`/admin/role`,data)
 }
 
-//修改公告
+//修改角色
 export function updateRole(id,data){
     return service.post(`/admin/role/${id}`,data)
 }
 
-//删除公告
+//删除角色
 export function deleteRole(id){
     return service.post(`/admin/role/${id}/delete`)
 }
@@ -24,5 +24,12 @@ export function deleteRole(id){
 export function updateRoleStatus(id,status){
     return service.post(`/admin/role/${id}/update_status`,{
         status
+    })
+}
+
+//配置角色权限
+export function setRole(id,rule_ids){
+    return service.post(`/admin/role/set_rules`,{
+        id,rule_ids
     })
 }

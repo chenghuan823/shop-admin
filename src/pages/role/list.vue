@@ -1,10 +1,11 @@
 <script setup>
 import {ref} from 'vue'
-import { getRoleList, addRole, updateRole, deleteRole,updateRoleStatus } from '~/api/role'
+import { getRoleList, addRole, updateRole, deleteRole,updateRoleStatus,setRole } from '~/api/role'
 import {getRuleList} from '~/api/rule'
 import FormDrawer from '~/components/FormDrawer.vue'
 import { useInitTable, useInitForm } from '~/composables/useCommon'
 import ListHeader from '~/components/ListHeader.vue'
+import {toast} from '~/composables/util'
 
 const {
     tableData,
@@ -60,10 +61,13 @@ const roleId=ref(0)
 const defaultExpandedKeys=ref([])
 const elTreeRef=ref(null)
 const ruleIds=ref([])
+const checkStrictly=ref(false)
 //当前角色拥有的权限ID
 const openSetRole=(row)=>{
     roleId.value=row.id
     treeHeight.value=window.innerHeight -180
+    checkStrictly.value=true
+
     getRuleList(1)
     .then(res=>{
         ruleList.value=res.list
@@ -73,11 +77,26 @@ const openSetRole=(row)=>{
         ruleIds.value=row.rules.map(o=>o.id)
         setTimeout(()=>{
             elTreeRef.value.setCheckedKeys(ruleIds.value)
+            checkStrictly.value=false
         },150)
     })
 }
 const handeSetRoleSubmit=()=>{
+    setRoleFormDrawerRef.value.showLoading()
+    setRole(roleId.value,ruleIds.value)
+    .then(res=>{
+        toast('配置成功')
+        getData()
+        setRoleFormDrawerRef.value.close()
+    })
+    .finally(()=>{
+        setRoleFormDrawerRef.value.hideLoading()
+    })
+}
 
+const handleTreeChecked=(...e)=>{
+    const {checkedKeys,halfCheckedKeys} =e[1]
+    ruleIds.value=[...checkedKeys,...halfCheckedKeys]
 }
 
 </script>
@@ -132,7 +151,7 @@ const handeSetRoleSubmit=()=>{
         </FormDrawer>
         <!-- 权限配置树形 -->
         <FormDrawer title="权限配置" ref="setRoleFormDrawerRef" @submit="handeSetRoleSubmit">
-            <el-tree node-key="id" :default-expanded-keys="defaultExpandedKeys" :data="ruleList" :props="{label:'name',children:'child'}" :height="treeHeight" ref="elTreeRef" show-checkbox>
+            <el-tree node-key="id" :default-expanded-keys="defaultExpandedKeys" :data="ruleList" :props="{label:'name',children:'child'}" :check-strictly="checkStrictly" :height="treeHeight" ref="elTreeRef" show-checkbox @check="handleTreeChecked">
                 <template #default="{node,data}">
                     <div class="flex items-center"> 
                         <el-tag :type="data.menu?'':'info'" size="small">
