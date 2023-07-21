@@ -135,9 +135,19 @@ export function useInitForm(opt={}) {
         return;
       }
       formDrawerRef.value.showLoading();
+
+      let body={
+
+      }
+      if(opt.beforeSubmit && typeof opt.beforeSubmit==='function'){
+        body=opt.beforeSubmit({...form})
+      }else{
+        body=form
+      }
+
       const fun = editId.value
-        ? opt.update(editId.value, form)
-        : opt.create(form);
+        ? opt.update(editId.value, body)
+        : opt.create(body);
       fun
         .then((res) => {
           toast(drawerTitle.value + "成功");

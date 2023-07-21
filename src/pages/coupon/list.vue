@@ -1,4 +1,5 @@
 <script setup>
+import {computed} from 'vue'
 import { getCouponList, addCoupon, updateCoupon, deleteCoupon } from '~/api/coupon'
 import FormDrawer from '~/components/FormDrawer.vue'
 import { useInitTable, useInitForm } from '~/composables/useCommon'
@@ -53,24 +54,39 @@ const {
     handleEdit
 } = useInitForm({
     form: {
-        title: '',
-        content: ''
+        name:'',
+        type:0,
+        value:0,
+        total:100,
+        min_price:0,
+        start_time:'',
+        end_time:'',
+        order:50
     },
     rules: {
-        title: [{
-            required: true,
-            message: '公告标题不能为空',
-            trigger: 'blur'
-        }],
-        content: [{
-            required: true,
-            message: '公告内容不能为空',
-            trigger: 'blur'
-        }]
     },
     getData,
     update: updateCoupon,
-    create: addCoupon
+    create: addCoupon,
+    beforeSubmit:(f)=>{
+        if(typeof f.start_time!='number'){
+            f.start_time=(new Date(f.start_time)).getTime()
+        }
+        if(typeof f.end_time!='number'){
+            f.end_time=(new Date(f.end_time)).getTime()
+        }
+        return f
+    }
+})
+
+const timerange=computed({
+    get(){
+        return form.start_time && form.end_time ? [form.start_time,form.end_time] : []
+    },
+    set(val){
+        form.start_time=val[0]
+        form.end_time=val[1]
+    }
 })
 </script>
 
@@ -91,21 +107,22 @@ const {
             <el-table-column prop="statusText" label="状态"  align="center"/>
             <el-table-column prop="statusText" label="优惠" align="center">
                 <template #default="{row}">
-                    {{ row.type ? '满减' : '折扣' }}{{ row.type ? ('￥'+row.value) : (row.value+'折') }}
+                    {{ row.type==0 ? '满减' : '折扣' }}{{ row.type ? ('￥'+row.value) : (row.value+'折') }}
                 </template>
             </el-table-column>
             <el-table-column prop="total" label="发放数量" align="center" />
             <el-table-column prop="used" label="已使用" align="center" />
             <el-table-column label="操作" align="center">
                 <template #default="scope">
-                    <el-button size="small" text type="primary" @click="handleEdit(scope.row)">修改</el-button>
-
-                    <el-popconfirm title="是否要删除此公告?" confirm-button-text="确认" cancel-button-text="取消"
-                        @confirm="handleDelete(scope.row.id)">
-                        <template #reference>
-                            <el-button text type="primary" size="small">删除</el-button>
-                        </template>
-                    </el-popconfirm>
+                    <div class="flex">
+                        <el-button size="small" text type="primary" @click="handleEdit(scope.row)">修改</el-button>
+                        <el-popconfirm title="是否要删除此公告?" confirm-button-text="确认" cancel-button-text="取消"
+                            @confirm="handleDelete(scope.row.id)">
+                            <template #reference>
+                                <el-button text type="primary" size="small">删除</el-button>
+                            </template>
+                        </el-popconfirm>
+                    </div>
                 </template>
             </el-table-column>
         </el-table>
@@ -117,11 +134,45 @@ const {
         <!-- 抽屉 -->
         <FormDrawer :title="drawerTitle" ref="formDrawerRef" @submit="handeSubmit">
             <el-form :model="form" ref="formRef" :rules="rules" label-width="80px" :inline="false">
-                <el-form-item prop="title" label="公告标题">
-                    <el-input v-model="form.title" placeholder="公告标题"></el-input>
+                <el-form-item prop="title" label="优惠券名称">
+                    <el-input v-model="form.name" placeholder="优惠券名称" style="width:50%"></el-input>
                 </el-form-item>
-                <el-form-item prop="content" label="公告内容">
-                    <el-input v-model="form.content" type="textarea" :rows="5" placeholder="公告内容"></el-input>
+                <el-form-item prop="type" label="类型">
+                    <el-radio-group v-model="form.type">
+                        <el-radio :label="0">满减</el-radio>
+                        <el-radio :label="1">折扣</el-radio>
+                    </el-radio-group>
+                    
+                </el-form-item>
+                <el-form-item prop="value" label="面值">
+                    <el-input v-model="form.value" placeholder="面值" style="width:50%">
+                        <template #append>
+                            {{ form.type ? '折':'元' }}
+                        </template>
+                    </el-input>
+                </el-form-item>
+                <el-form-item prop="total" label="发行量">
+                    <el-input-number v-model="form.total"  placeholder="发行量"   style="width:50%" :min="0" :max="10000"></el-input-number>
+                </el-form-item>
+                <el-form-item prop="min_price" label="最低使用价格">
+                    <el-input type="number" v-model="form.min_price"  placeholder="最低使用价格"   style="width:50%" ></el-input>
+                </el-form-item>
+                <el-form-item prop="order" label="排序">
+                    <el-input-number :min="0" :max="1000" v-model="form.order" placeholder="排序" style="width:50%"></el-input-number>
+                </el-form-item>
+                <el-form-item label="活动时间">
+                    <el-date-picker
+                    :editable="false"
+                        v-model="timerange"
+                        value-format="YYYY-MM-DD HH:mm:ss"
+                        type="datetimerange"
+                        range-separator="To"
+                        start-placeholder="开始时间"
+                        end-placeholder="结束时间"
+                    />
+                </el-form-item>
+                <el-form-item prop="desc" label="描述">
+                    <el-input type="textarea" v-model="form.desc" placeholder="描述" style="width:50%"></el-input>
                 </el-form-item>
             </el-form>
         </FormDrawer>
