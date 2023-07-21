@@ -54,14 +54,38 @@ const {
     update: updateSkus,
     create: addSkus
 })
+//多选选中ID
+const multiSelectionId=ref([])
+const handleSelectionChange=(e)=>{
+    multiSelectionId.value=e.map(o=>o.id)
+
+}
+
+//批量删除
+const multipleTableRef=ref(null)
+const handleMutiDelete=()=>{
+    loading.value=true
+    deleteSkus(multiSelectionId.value)
+    .then(res=>{
+        toast('删除成功')
+        if(multipleTableRef.value){
+            multipleTableRef.value.clearSelection()
+        }
+        getData()
+    })
+    .finally(()=>{
+        loading.value=false
+    })
+}
 </script>
 
 <template>
     <el-card shadow="never" class="border-0">
         <!-- 新增 | 刷新 -->
-        <ListHeader @create="openDrawer" @refresh="getData" />
+        <ListHeader layout="create,delete,refresh" @delete="handleMutiDelete" @create="openDrawer" @refresh="getData" />
         <!-- 表格区域 -->
-        <el-table :data="tableData" stripe style="width:100%" v-loading="loading">
+        <el-table ref="multipleTableRef" :data="tableData" stripe style="width:100%" v-loading="loading" @selection-change="handleSelectionChange">
+            <el-table-column type="selection" width="55" />
             <el-table-column prop="name" label="规格名称" width="180" />
             <el-table-column prop="default" label="规格值" width="380" />
             <el-table-column prop="order" label="排序" />
@@ -73,14 +97,15 @@ const {
             </el-table-column>
             <el-table-column label="操作" align="center">
                 <template #default="scope">
-                    <el-button size="small" text type="primary" @click="handleEdit(scope.row)">修改</el-button>
-
-                    <el-popconfirm title="是否要删除此规格?" confirm-button-text="确认" cancel-button-text="取消"
-                        @confirm="handleDelete(scope.row.id)">
-                        <template #reference>
-                            <el-button text type="primary" size="small">删除</el-button>
-                        </template>
-                    </el-popconfirm>
+                    <div class="flex">
+                        <el-button size="small" text type="primary" @click="handleEdit(scope.row)">修改</el-button>
+                        <el-popconfirm title="是否要删除此规格?" confirm-button-text="确认" cancel-button-text="取消"
+                            @confirm="handleDelete(scope.row.id)">
+                            <template #reference>
+                                <el-button text type="primary" size="small">删除</el-button>
+                            </template>
+                        </el-popconfirm>
+                    </div>
                 </template>
             </el-table-column>
         </el-table>
