@@ -4,6 +4,22 @@ import FormDrawer from '~/components/FormDrawer.vue'
 import { useInitTable, useInitForm } from '~/composables/useCommon'
 import ListHeader from '~/components/ListHeader.vue'
 
+function formatStatus(row){
+    let s='领取中'
+    let start_time=(new Date(row.start_time)).getTime()
+    let now=(new Date()).getTime()
+    let end_time=(new Date(row.end_time)).getTime()
+    if(start_time>now){
+        s='未开始'
+
+    }else if(end_time<now){
+        s='已结束'
+    }else if(row.status==0){
+        s='已失效'
+    }
+    return s
+}
+
 const {
     tableData,
     loading,
@@ -14,7 +30,16 @@ const {
     handleDelete
 } = useInitTable({
     getList: getCouponList,
-    delete:deleteCoupon
+    delete:deleteCoupon,
+    onGetListSuccess:(res)=>{
+        tableData.value=res.list.map(o=>{
+            //转化优惠券状态
+            o.statusText=formatStatus(o)
+            return o
+        })
+        total.value=res.totalCount
+        
+    }
 })
 
 const {
@@ -57,7 +82,7 @@ const {
         <el-table :data="tableData" stripe style="width:100%" v-loading="loading">
             <el-table-column prop="title" label="优惠券名称" width="350" >
                 <template #default="{row}">
-                    <div class="border border-dashed py-2 px-2 rounded">
+                    <div class="border border-dashed py-2 px-4 rounded" :class="row.statusText==='领取中' ?'active':'inactive'">{{ row.statusText }}
                         <h5 class="font-bold text-md">{{ row.name }}</h5>
                         <small>{{ row.start_time }} ~ {{ row.end_time }}</small>
                     </div>
@@ -99,9 +124,15 @@ const {
                     <el-input v-model="form.content" type="textarea" :rows="5" placeholder="公告内容"></el-input>
                 </el-form-item>
             </el-form>
-
         </FormDrawer>
     </el-card>
 </template>
 
-<style scoped></style>
+<style scoped>
+.active{
+    @apply border-rose-200 bg-rose-50 text-red-400;
+}
+.inactive{
+    @apply border-gray-200 bg-gray-50 text-gray-400;
+}
+</style>
