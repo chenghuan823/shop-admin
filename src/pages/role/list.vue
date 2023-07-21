@@ -57,15 +57,23 @@ const setRoleFormDrawerRef=ref(null)
 const ruleList=ref([])
 const treeHeight=ref(0)
 const roleId=ref(0)
+const defaultExpandedKeys=ref([])
+const elTreeRef=ref(null)
+const ruleIds=ref([])
+//当前角色拥有的权限ID
 const openSetRole=(row)=>{
     roleId.value=row.id
-    treeHeight.value=window.innerHeight -170
+    treeHeight.value=window.innerHeight -180
     getRuleList(1)
     .then(res=>{
         ruleList.value=res.list
-        console.log(res);
+        defaultExpandedKeys.value=res.list.map(o=>o.id)
         setRoleFormDrawerRef.value.open()
-
+        //当前角色拥有的权限ID
+        ruleIds.value=row.rules.map(o=>o.id)
+        setTimeout(()=>{
+            elTreeRef.value.setCheckedKeys(ruleIds.value)
+        },150)
     })
 }
 const handeSetRoleSubmit=()=>{
@@ -124,8 +132,18 @@ const handeSetRoleSubmit=()=>{
         </FormDrawer>
         <!-- 权限配置树形 -->
         <FormDrawer title="权限配置" ref="setRoleFormDrawerRef" @submit="handeSetRoleSubmit">
-            <el-tree  :data="ruleList" node-key="" :props="{label:'name',children:'child'}" :height="treeHeight" empty-text="" show-checkbox="false" highlight-current="true" @node-click=""></el-tree>
-            
+            <el-tree node-key="id" :default-expanded-keys="defaultExpandedKeys" :data="ruleList" :props="{label:'name',children:'child'}" :height="treeHeight" ref="elTreeRef" show-checkbox>
+                <template #default="{node,data}">
+                    <div class="flex items-center"> 
+                        <el-tag :type="data.menu?'':'info'" size="small">
+                            {{ data.menu?'菜单':'权限' }}
+                        </el-tag>
+                        <span class="ml-2 text-sm">
+                            {{ data.name }}
+                        </span>
+                    </div>
+                </template>
+            </el-tree>
         </FormDrawer>
     </el-card>
 </template>
