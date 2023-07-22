@@ -1,6 +1,6 @@
 <script setup>
 import {computed} from 'vue'
-import { getCouponList, addCoupon, updateCoupon, deleteCoupon } from '~/api/coupon'
+import { getCouponList, addCoupon, updateCoupon, deleteCoupon,updateCouponStatus } from '~/api/coupon'
 import FormDrawer from '~/components/FormDrawer.vue'
 import { useInitTable, useInitForm } from '~/composables/useCommon'
 import ListHeader from '~/components/ListHeader.vue'
@@ -28,10 +28,12 @@ const {
     total,
     limit,
     getData,
-    handleDelete
+    handleDelete,
+    handleStatusChange
 } = useInitTable({
     getList: getCouponList,
     delete:deleteCoupon,
+    updateStatus:updateCouponStatus,
     onGetListSuccess:(res)=>{
         tableData.value=res.list.map(o=>{
             //转化优惠券状态
@@ -104,7 +106,7 @@ const timerange=computed({
                     </div>
                 </template>
             </el-table-column>
-            <el-table-column prop="statusText" label="状态"  align="center"/>
+            <el-table-column prop="statusText" label="状态" width="100"  align="center"/>
             <el-table-column prop="statusText" label="优惠" align="center">
                 <template #default="{row}">
                     {{ row.type==0 ? '满减' : '折扣' }}{{ row.type ? ('￥'+row.value) : (row.value+'折') }}
@@ -112,14 +114,20 @@ const timerange=computed({
             </el-table-column>
             <el-table-column prop="total" label="发放数量" align="center" />
             <el-table-column prop="used" label="已使用" align="center" />
-            <el-table-column label="操作" align="center">
+            <el-table-column label="操作">
                 <template #default="scope">
-                    <div class="flex">
-                        <el-button size="small" text type="primary" @click="handleEdit(scope.row)">修改</el-button>
-                        <el-popconfirm title="是否要删除此公告?" confirm-button-text="确认" cancel-button-text="取消"
+                    <div>
+                        <el-button v-if="scope.row.statusText==='未开始'" size="small" text type="primary" @click="handleEdit(scope.row)">修改</el-button>
+                        <el-popconfirm v-if="scope.row.statusText!='领取中'" title="是否要删除此优惠券?" confirm-button-text="确认" cancel-button-text="取消"
                             @confirm="handleDelete(scope.row.id)">
                             <template #reference>
                                 <el-button text type="primary" size="small">删除</el-button>
+                            </template>
+                        </el-popconfirm>
+                        <el-popconfirm v-if="scope.row.statusText==='领取中'" title="是否要让此优惠券失效?" confirm-button-text="失效" cancel-button-text="取消"
+                            @confirm="handleStatusChange(0,scope.row)">
+                            <template #reference>
+                                <el-button type="danger" size="small">失效</el-button>
                             </template>
                         </el-popconfirm>
                     </div>
