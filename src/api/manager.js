@@ -1,4 +1,5 @@
 import service from '~/axios'
+import {queryParams} from '~/composables/util'
 
 //登录
 export function login(username,password){
@@ -25,14 +26,7 @@ export function updatepassword(data){
 
 //管理员列表
 export function getManagerList(page,query={}){
-    let q=[]
-    for (const key in query) {
-        if(query[key]){
-            q.push(`${key}=${encodeURIComponent(query[key])}`)
-        }
-    }
-    let r=q.join('&')
-    r=r ? "?"+r :''
+    let r=queryParams(query)
     return service.get(`/admin/manager/${page}${r}`)
 }
 
