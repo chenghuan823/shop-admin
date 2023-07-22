@@ -20,7 +20,9 @@ const {
     handleStatusChange
 }= useInitTable({
     searchForm:{
-        keyword:''
+        title:'',
+        tab:'all',
+        category_id:null
     },
     getList:getGoodsList,
     onGetListSuccess:(res)=>{
@@ -56,17 +58,42 @@ const {
     update:updateGoods,
     create:createGoods
 })
-
+//all全部，checking审核中，saling出售中，off已下架，min_stock库存预警，delete回收站
+const tabbars=[
+    {
+        key:'all',
+        name:'全部'
+    },{
+        key:'checking',
+        name:'审核中'
+    },{
+        key:'saling',
+        name:'出售中'
+    },{
+        key:'off',
+        name:'已下架'
+    },{
+        key:'min_stock',
+        name:'库存预警'
+    },{
+        key:'delete',
+        name:'回收站'
+    },
+]
 </script>
 
 <template>
-    <el-card shadow="never" class="border-0">
+    <div>
+        <el-tabs v-model="searchForm.tab" @tab-change="getData">
+            <el-tab-pane v-for="(item,index) in tabbars" :label="item.name" :key="index" :name="item.key"></el-tab-pane>
+        </el-tabs>
+        <el-card shadow="never" class="border-0">
         <!-- 搜索 -->
         <el-form :model="searchForm" label-width="80px" class="mb-3" size="small">
             <el-row :gutter="20">
                 <el-col :span="8" :offset="0">
                     <el-form-item label="关键词">
-                        <el-input v-model="searchForm.keyword" placeholder="管理员昵称" clearable></el-input>
+                        <el-input v-model="searchForm.title" placeholder="商品名称" clearable></el-input>
                     </el-form-item>
                 </el-col>
                 <el-col :span="8" :offset="8">
@@ -152,6 +179,7 @@ const {
             </el-form>
         </FormDrawer>
     </el-card>
+    </div>
 </template>
 
 <style scoped>
