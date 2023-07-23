@@ -2,6 +2,7 @@
 import {ref,onBeforeUnmount} from 'vue'
 import ImageAside from '~/components/ImageAside.vue'
 import ImageMain from '~/components/ImageMain.vue'
+import {toast} from '~/composables/util'
 
 const ImageAsideRef=ref(null)
 const ImageMainRef=ref(null)
@@ -29,7 +30,11 @@ const close=()=>{
 }
 
 const props=defineProps({
-    modelValue:[String,Array]
+    modelValue:[String,Array],
+    limit:{
+        type:Number,
+        default:1
+    }
 })
 
 const emit=defineEmits(["update:modelValue"])
@@ -40,9 +45,17 @@ const handleChoose=(e)=>{
 }
 
 const submit=()=>{
-    if(urls.length){
-        emit("update:modelValue",urls[0])
-        urls[0]
+    let value=[]
+    if(props.limit==1){
+        value=urls[0]
+    }else{
+        value=[...props.modelValue,...urls]
+        if(value.length>props.limit){
+            return toast(`最多还能选中${props.limit-props.modelValue.length}张`)
+        }
+    }
+    if(value){
+        emit("update:modelValue",value)
     }
     close()
 }
@@ -74,7 +87,7 @@ const removeImage=(url)=>{
             </el-header>
             <el-container>
                 <ImageAside ref="ImageAsideRef" @change="handleAsideChange"/>
-                <ImageMain :openChoose="true" @choose="handleChoose" ref="ImageMainRef"/>
+                <ImageMain :limit="limit" :openChoose="true" @choose="handleChoose" ref="ImageMainRef"/>
             </el-container>
         </el-container>
         <template #footer>
