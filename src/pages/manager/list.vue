@@ -5,6 +5,9 @@ import FormDrawer from '~/components/FormDrawer.vue'
 import ListHeader from '~/components/ListHeader.vue'
 import ChooseImage from '~/components/ChooseImage.vue'
 import {useInitTable,useInitForm} from '~/composables/useCommon'
+import Search from '~/components/Search.vue'
+import SearchItem from '~/components/SearchItem.vue'
+
 const roles=ref([])
 
 const {
@@ -61,7 +64,7 @@ const {
 
 <template>
     <el-card shadow="never" class="border-0">
-        <!-- 搜索 -->
+        <!-- 搜索
         <el-form :model="searchForm" label-width="80px" class="mb-3" size="small">
             <el-row :gutter="20">
                 <el-col :span="8" :offset="0">
@@ -76,7 +79,13 @@ const {
                         </div>
                 </el-col>
             </el-row>
-        </el-form>
+        </el-form> -->
+        <!-- 搜索 -->
+        <Search :searchForm="searchForm" @search="getData" @reset="resetSearchForm">
+            <SearchItem label="关键词" >
+                <el-input v-model="searchForm.keyword" placeholder="管理员昵称" clearable></el-input>
+            </SearchItem>
+        </Search>
         <ListHeader @create="openDrawer" @refresh="getData" />
         
         <!-- 表格区域 -->
