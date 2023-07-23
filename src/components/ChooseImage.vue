@@ -22,7 +22,9 @@ const handleOpenUpload=()=>{
 
 const dialogVisiable=ref(false)
 
-const open=()=>{
+const callbackFunction=ref(null)
+const open=(callback=null)=>{
+    callbackFunction.value=callback
     dialogVisiable.value=true
 }
 const close=()=>{
@@ -34,6 +36,10 @@ const props=defineProps({
     limit:{
         type:Number,
         default:1
+    },
+    preview:{
+        type:Boolean,
+        default:true
     }
 })
 
@@ -49,13 +55,17 @@ const submit=()=>{
     if(props.limit==1){
         value=urls[0]
     }else{
-        value=[...props.modelValue,...urls]
+        value=props.preview==true?[...props.modelValue,...urls]:[...urls]
         if(value.length>props.limit){
-            return toast(`最多还能选中${props.limit-props.modelValue.length}张`)
+            let limit=props.preview?(pros.limit - props.modelValue.length):props.limit
+            return toast(`最多还能选中${limit}张`)
         }
     }
-    if(value){
+    if(value && props.preview){
         emit("update:modelValue",value)
+    }
+    if(!props.preview && typeof callbackFunction.value=='function'){
+        callbackFunction.value(value)
     }
     close()
 }
@@ -63,10 +73,13 @@ const submit=()=>{
 const removeImage=(url)=>{
     emit("update:modelValue",props.modelValue.filter(u=>u!=url))
 }
+defineExpose({
+    open
+})
 </script>
 
 <template>
-    <div v-if="modelValue"> 
+    <div v-if="modelValue && preview"> 
         <el-image v-if="(typeof modelValue==='string')" :src="modelValue" fit="cover" class="w-[100px] h-[100px] rounded border mr-2"></el-image>
         <div v-else class="flex flex-wrap">
             <div class="relative mx-1 mb-2 w-[100px] h-[100px]" v-for="(url,index) in modelValue" :key="index" >
@@ -76,7 +89,7 @@ const removeImage=(url)=>{
         </div>
         
     </div>
-    <div class="choose-image-btn" @click="open">
+    <div v-if="preview" class="choose-image-btn" @click="open">
         <el-icon class="text-gray-500" :size="25"><Plus/></el-icon>
     </div>
     <el-dialog title="选择图片" v-model="dialogVisiable" width="80%" top="5vh">

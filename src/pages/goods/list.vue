@@ -9,6 +9,7 @@ import {useInitTable,useInitForm} from '~/composables/useCommon'
 import Search from '~/components/Search.vue'
 import SearchItem from '~/components/SearchItem.vue'
 import Banners from './banners.vue'
+import Content from './content.vue'
 
 const {
     searchForm,
@@ -35,6 +36,7 @@ const {
         total.value=res.totalCount
         tableData.value=res.list.map(o=>{
             o.bannersLoading=false
+            o.contentLoading=false
             return o
         })
     },
@@ -102,6 +104,13 @@ const bannersRef=ref(null)
 const handleSetGoodsBanners=(row)=>{
     bannersRef.value.open(row)
 }
+//设置商品详情
+const contentRef=ref(null)
+const handleSetGoodContent=(row)=>{
+    contentRef.value.open(row)
+}
+
+
 </script>
 
 <template>
@@ -183,7 +192,7 @@ const handleSetGoodsBanners=(row)=>{
                         <el-button class="px-1" size="small" text @click="handleSetGoodsBanners(scope.row)" :loading="scope.row.bannersLoading"
                         :type="scope.row.goods_banner.length==0 ? 'danger' :'primary'"
                         >设置轮播图</el-button>
-                        <el-button class="px-1" size="small" text type="primary">商品详情</el-button>
+                        <el-button class="px-1" size="small"  @click="handleSetGoodContent(scope.row)" :loading="scope.row.contentLoading" text :type="!scope.row.content ? 'danger' :'primary'">商品详情</el-button>
                         <el-popconfirm title="是否要删除此管理员?" confirm-button-text="确认" cancel-button-text="取消" @confirm="handleDelete(scope.row.id)" >
                             <template #reference>
                                 <el-button text type="primary" size="small">删除</el-button>  
@@ -260,6 +269,7 @@ const handleSetGoodsBanners=(row)=>{
         </FormDrawer>
     </el-card>
     <Banners ref="bannersRef" @reload-data="getData"/>
+    <Content ref="contentRef" @reload-data="getData"/>
     </div>
 </template>
 
