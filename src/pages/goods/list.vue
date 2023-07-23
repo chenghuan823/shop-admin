@@ -8,6 +8,7 @@ import ChooseImage from '~/components/ChooseImage.vue'
 import {useInitTable,useInitForm} from '~/composables/useCommon'
 import Search from '~/components/Search.vue'
 import SearchItem from '~/components/SearchItem.vue'
+import Banners from './banners.vue'
 
 const {
     searchForm,
@@ -96,8 +97,11 @@ const category_list=ref([])
 getCategoryList().then(res=>{
     category_list.value=res
 })
-
-const showSearch=ref(false)
+//设置轮播图
+const bannersRef=ref(null)
+const handleSetGoodsBanners=(row)=>{
+    bannersRef.value.open(row)
+}
 </script>
 
 <template>
@@ -176,7 +180,7 @@ const showSearch=ref(false)
                         <el-button class="px-1" size="small" text type="primary" @click="handleEdit(scope.row)"
                         >修改</el-button>
                         <el-button class="px-1" size="small" text type="primary">商品规格</el-button>
-                        <el-button class="px-1" size="small" text type="primary">设置轮播图</el-button>
+                        <el-button class="px-1" size="small" text type="primary" @click="handleSetGoodsBanners(scope.row)">设置轮播图</el-button>
                         <el-button class="px-1" size="small" text type="primary">商品详情</el-button>
                         <el-popconfirm title="是否要删除此管理员?" confirm-button-text="确认" cancel-button-text="取消" @confirm="handleDelete(scope.row.id)" >
                             <template #reference>
@@ -253,6 +257,7 @@ const showSearch=ref(false)
             </el-form>
         </FormDrawer>
     </el-card>
+    <Banners ref="bannersRef"/>
     </div>
 </template>
 

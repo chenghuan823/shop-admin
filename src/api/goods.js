@@ -29,3 +29,13 @@ export function deleteGoods(ids){
         ids
     })
 } 
+
+//查看商品资料
+export function readGoods(id){
+    return service.get(`/admin/goods/read/${id}`)
+}
+
+//设置商品轮播图
+export function setGoodsBanner(id,data){
+    return service.post(`/admin/goods/banners/${id}`,data)
+}
