@@ -46,11 +46,21 @@ const submit=()=>{
     }
     close()
 }
+
+const removeImage=(url)=>{
+    emit("update:modelValue",props.modelValue.filter(u=>u!=url))
+}
 </script>
 
 <template>
     <div v-if="modelValue"> 
-        <el-image :src="modelValue" fit="cover" class="w-[100px] h-[100px] rounded border mr-2"></el-image>
+        <el-image v-if="(typeof modelValue==='string')" :src="modelValue" fit="cover" class="w-[100px] h-[100px] rounded border mr-2"></el-image>
+        <div v-else class="flex flex-wrap">
+            <div class="relative mx-1 mb-2 w-[100px] h-[100px]" v-for="(url,index) in modelValue" :key="index" >
+                <el-icon @click="removeImage(url)" style=" z-index:10" class="absolute bg-white rounded-full right-[5px] top-[5px] cursor-pointer "><CircleClose /></el-icon>
+                <el-image :src="url" fit="cover" class="w-[100px] h-[100px] rounded border mr-2"></el-image>
+            </div>
+        </div>
         
     </div>
     <div class="choose-image-btn" @click="open">
