@@ -34,7 +34,7 @@ const {
     onGetListSuccess:(res)=>{
         total.value=res.totalCount
         tableData.value=res.list.map(o=>{
-            o.statusLoading=false
+            o.bannersLoading=false
             return o
         })
     },
@@ -180,7 +180,9 @@ const handleSetGoodsBanners=(row)=>{
                         <el-button class="px-1" size="small" text type="primary" @click="handleEdit(scope.row)"
                         >修改</el-button>
                         <el-button class="px-1" size="small" text type="primary">商品规格</el-button>
-                        <el-button class="px-1" size="small" text type="primary" @click="handleSetGoodsBanners(scope.row)">设置轮播图</el-button>
+                        <el-button class="px-1" size="small" text @click="handleSetGoodsBanners(scope.row)" :loading="scope.row.bannersLoading"
+                        :type="scope.row.goods_banner.length==0 ? 'danger' :'primary'"
+                        >设置轮播图</el-button>
                         <el-button class="px-1" size="small" text type="primary">商品详情</el-button>
                         <el-popconfirm title="是否要删除此管理员?" confirm-button-text="确认" cancel-button-text="取消" @confirm="handleDelete(scope.row.id)" >
                             <template #reference>
@@ -257,7 +259,7 @@ const handleSetGoodsBanners=(row)=>{
             </el-form>
         </FormDrawer>
     </el-card>
-    <Banners ref="bannersRef"/>
+    <Banners ref="bannersRef" @reload-data="getData"/>
     </div>
 </template>
 
