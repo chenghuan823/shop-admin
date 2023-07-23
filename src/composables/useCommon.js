@@ -103,6 +103,22 @@ const handleMutiDelete=()=>{
     })
 }
 
+//批量修改状态
+const handleMutiStatusChange=(status)=>{
+    loading.value=true
+    opt.updateStatus(multiSelectionId.value,status)
+    .then(res=>{
+        toast('修改状态成功')
+        if(multipleTableRef.value){
+            multipleTableRef.value.clearSelection()
+        }
+        getData()
+    })
+    .finally(()=>{
+        loading.value=false
+    })
+}
+
   return {
     searchForm,
     resetSearchForm,
@@ -116,7 +132,8 @@ const handleMutiDelete=()=>{
     handleStatusChange,
     handleSelectionChange,
     multipleTableRef,
-    handleMutiDelete
+    handleMutiDelete,
+    handleMutiStatusChange
   };
 }
 //新增，修改

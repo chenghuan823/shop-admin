@@ -19,7 +19,10 @@ const {
     limit,
     getData,
     handleDelete,
-    handleStatusChange
+    handleSelectionChange,
+    multipleTableRef,
+    handleMutiDelete,
+    handleMutiStatusChange
 }= useInitTable({
     searchForm:{
         title:'',
@@ -121,10 +124,14 @@ const showSearch=ref(false)
             </template>
         </Search>
         <!-- 新增|刷新 -->
-        <ListHeader @create="openDrawer" @refresh="getData" />
-        
+        <ListHeader layout="create,delete,refresh" @create="openDrawer" @refresh="getData" @delete="handleMutiDelete" >
+            <el-button v-if="searchForm.tab=='all'||searchForm.tab=='off'" size="small" @click="handleMutiStatusChange(1)">上架</el-button>
+            <el-button v-if="searchForm.tab=='all'||searchForm.tab=='saling'" size="small" @click="handleMutiStatusChange(0)">下架</el-button>
+        </ListHeader>
         <!-- 表格区域 -->
-        <el-table :data="tableData" stripe style="width:100%" v-loading="loading">
+        <el-table ref="multipleTableRef" @selection-change="handleSelectionChange" :data="tableData" stripe style="width:100%" v-loading="loading">
+            <el-table-column type="selection" width="55" />
+
             <el-table-column label="商品" width="300" >
                 <template #default="{row}">
                     <div class="flex items-center">

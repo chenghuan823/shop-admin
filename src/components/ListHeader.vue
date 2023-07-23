@@ -21,6 +21,7 @@ const btns=computed(()=>props.layout.split(','))
                     <el-button type="danger" size="small">批量删除</el-button>
                 </template>
             </el-popconfirm>
+            <slot></slot>
         </div>
         <el-tooltip  v-if="btns.includes('refresh')" content="刷新数据" placement="bottom" effect="dark">
             <el-button @click="$emit('refresh')" type="primary" text>
